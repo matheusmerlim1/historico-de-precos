@@ -6,40 +6,45 @@
  },
  "titulo": "Celular Samsung Galaxy S25 Ultra 5G, 256GB, 12GB RAM, Câmera Quádrupla de 200+50+10+50, Tela Grande de 6.9\", Titânio Azul",
  "criadoEm": "2026-11-14T16:42:03.695Z",
- "atualizadoEm": "2026-11-14T16:42:03.695Z",
+ "atualizadoEm": "2026-11-14T16:48:37.562Z",
  "copiasLidas": [
   "20250218214447",
   "20250716171527",
   "20250831112755",
+  "20250908131043",
   "20251002185610",
   "20251012183719",
   "20251112042543",
   "20251127113823",
   "20251203171242",
   "20251205050837",
+  "20251211214620",
   "20251212030401",
   "20251217044136",
   "20251228000019",
   "20260106132120",
   "20260206125035",
   "20260216175105",
+  "20260220123924",
   "20260223125602",
   "20260224000525",
   "20260227020443",
   "20260318182119",
   "20260319144219",
   "20260406131351",
+  "20260408192647",
   "20260415040653",
   "20260417110326",
   "20260420012948",
   "20260424132721",
   "20260508174830",
   "20260512011803",
+  "20260702015206",
   "20260809094410",
   "20261008175322",
   "20261015140001"
  ],
- "copiasRestantes": 5,
+ "copiasRestantes": 0,
  "pontos": [
   {
    "data": "2025-02-18T21:44:47Z",
@@ -91,6 +96,13 @@
    "link": "https://web.archive.org/web/20251205050837/https://www.amazon.com.br/dp/B0DSY93451?tag=leuzxn-20&th=1&ascsubtag=srctok-6d9c3bae597ebf05&btn_ref=srctok-6d9c3bae597ebf05"
   },
   {
+   "data": "2025-12-11T21:46:20Z",
+   "precoCentavos": 599508,
+   "precoDeCentavos": 1099900,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251211214620/https://www.amazon.com.br/dp/B0DSY93451/ref=cm_sw_r_as_gl_apa_gl_i_BNHV2JGDE36H1EFFZ2JY?linkCode=ml1&tag=tudonapromo00-20&linkId=59730d472d74f2460b3cf1e3f10f156b&ascsubtag=srctok-34adf03479acdf08&btn_ref=srctok-34adf03479acdf08"
+  },
+  {
    "data": "2025-12-12T03:04:01Z",
    "precoCentavos": 599508,
    "precoDeCentavos": 1099900,
@@ -133,6 +145,13 @@
    "link": "https://web.archive.org/web/20260216175105/https://www.amazon.com.br/dp/B0DSY93451?keywords=JUAO&th=1&linkCode=sl1&tag=louco-20&linkId=6c3c8a3ff9d4e10e66558331fc8130be&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
+   "data": "2026-02-20T12:39:24Z",
+   "precoCentavos": 679861,
+   "precoDeCentavos": 1099900,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260220123924/https://www.amazon.com.br/dp/B0DSY93451?linkCode=ogi&th=1&psc=1&tag=tudocel-20"
+  },
+  {
    "data": "2026-02-23T12:56:02Z",
    "precoCentavos": 699900,
    "precoDeCentavos": 1099900,
@@ -173,6 +192,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20260406131351/https://www.amazon.com.br/dp/B0DSY93451?linkCode=sl2&language=pt_BR&tag=tiagovinicius-20"
+  },
+  {
+   "data": "2026-04-08T19:26:47Z",
+   "precoCentavos": 592868,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260408192647/https://www.amazon.com.br/dp/B0DSY93451?linkCode=ogi&th=1&psc=1&tag=tudocel-20"
   },
   {
    "data": "2026-04-15T04:06:53Z",
@@ -225,7 +251,7 @@
   }
  ],
  "resumo": {
-  "quantidade": 26,
+  "quantidade": 29,
   "menor": {
    "data": "2026-11-14T16:44:52.434Z",
    "precoCentavos": 479880,
@@ -240,7 +266,7 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250218214447/https://www.amazon.com.br/dp/B0DSY93451"
   },
-  "mediaCentavos": 656671,
+  "mediaCentavos": 653300,
   "atual": {
    "data": "2026-11-14T16:44:52.434Z",
    "precoCentavos": 479880,

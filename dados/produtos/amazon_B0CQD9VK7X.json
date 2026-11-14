@@ -6,15 +6,17 @@
  },
  "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
  "criadoEm": "2026-11-14T16:35:08.592Z",
- "atualizadoEm": "2026-11-14T16:35:08.592Z",
+ "atualizadoEm": "2026-11-14T16:47:45.329Z",
  "copiasLidas": [
   "20240211093757",
+  "20240623131728",
   "20240923155325",
   "20241009010320",
   "20241207142828",
   "20250113201327",
   "20250311201827",
   "20250322131215",
+  "20250408182148",
   "20250411204448",
   "20250425104841",
   "20250709113156",
@@ -23,6 +25,7 @@
   "20250826050022",
   "20250902133022",
   "20251004053848",
+  "20251009134909",
   "20251010212437",
   "20251014185743",
   "20251018034841",
@@ -31,15 +34,17 @@
   "20251103093041",
   "20251112045709",
   "20251118121253",
+  "20251118140446",
   "20251203130518",
   "20260206100207",
   "20260309173747",
   "20260314010312",
   "20260502141316",
   "20260718212642",
+  "20260909083034",
   "20261004180129"
  ],
- "copiasRestantes": 92,
+ "copiasRestantes": 109,
  "pontos": [
   {
    "data": "2024-02-11T09:37:57Z",
@@ -77,6 +82,13 @@
    "link": "https://web.archive.org/web/20250311201827/https://www.amazon.com.br/dp/B0CQD9VK7X?language=pt_BR&linkCode=ogi&psc=1&tag=rstone03-20&th=1"
   },
   {
+   "data": "2025-04-08T18:21:48Z",
+   "precoCentavos": 687990,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250408182148/https://www.amazon.com.br/gp/product/B0CQD9VK7X?th=1&linkCode=sl1&tag=casaldaspro0d-20&linkId=0d811ca5b23d2da2de7c595f51a1b7b7&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
    "data": "2025-04-11T20:44:48Z",
    "precoCentavos": 649890,
    "precoDeCentavos": null,
@@ -110,6 +122,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250902133022/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=pedro24-20&linkId=73ebb4f6fb39d036d7b0b1b1aaf88817&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2025-10-09T13:49:09Z",
+   "precoCentavos": 499900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251009134909/https://www.amazon.com.br/dp/B0CQD9VK7X/ref=cm_sw_r_as_gl_apa_gl_i_dl_HM7295WJP4Z1QXQA86ZK"
   },
   {
    "data": "2025-10-10T21:24:37Z",
@@ -204,7 +223,7 @@
   }
  ],
  "resumo": {
-  "quantidade": 23,
+  "quantidade": 25,
   "menor": {
    "data": "2025-12-03T13:05:18Z",
    "precoCentavos": 449900,
@@ -219,7 +238,7 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20240211093757/https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
-  "mediaCentavos": 550509,
+  "mediaCentavos": 553984,
   "atual": {
    "data": "2026-11-14T16:37:52.303Z",
    "precoCentavos": 521457,
@@ -228,6 +247,6 @@
    "link": "https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
   "primeiraData": "2024-02-11T09:37:57Z",
-  "veredito": "O último preço está 5% abaixo da média e 16% acima do menor já visto (R$ 4.499,00)."
+  "veredito": "O último preço está 6% abaixo da média e 16% acima do menor já visto (R$ 4.499,00)."
  }
 }
