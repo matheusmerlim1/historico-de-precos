@@ -1,0 +1,225 @@
+/* Tela do histórico de preço (cópia igual na página pública historico-de-precos). */
+:root {
+  --hp-texto: #1a1a1a;
+  --hp-suave: #4a4a4a;
+  --hp-fundo-cartao: #f5f7f5;
+  --hp-borda: #c9cfc9;
+  --hp-grade: #dde2dd;
+  --hp-linha: #1f6f3a;
+  --hp-arquivo: #1f5fae;
+  --hp-loja: #1f6f3a;
+  --hp-telegram: #a3420b;
+  --hp-aviso-fundo: #fff6e0;
+  --hp-aviso-borda: #c99a2e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --hp-texto: #ececec;
+    --hp-suave: #c4c4c4;
+    --hp-fundo-cartao: #1e2420;
+    --hp-borda: #48524a;
+    --hp-grade: #333a35;
+    --hp-linha: #6fcf8f;
+    --hp-arquivo: #7fb2ff;
+    --hp-loja: #6fcf8f;
+    --hp-telegram: #ffa66b;
+    --hp-aviso-fundo: #3a2f12;
+    --hp-aviso-borda: #c99a2e;
+  }
+}
+
+:root[data-theme='dark'] {
+  --hp-texto: #ececec;
+  --hp-suave: #c4c4c4;
+  --hp-fundo-cartao: #1e2420;
+  --hp-borda: #48524a;
+  --hp-grade: #333a35;
+  --hp-linha: #6fcf8f;
+  --hp-arquivo: #7fb2ff;
+  --hp-loja: #6fcf8f;
+  --hp-telegram: #ffa66b;
+  --hp-aviso-fundo: #3a2f12;
+  --hp-aviso-borda: #c99a2e;
+}
+
+.hp-resultado {
+  color: var(--hp-texto);
+}
+
+.hp-titulo {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  margin: 0 0 0.25rem;
+}
+
+.hp-loja {
+  color: var(--hp-suave);
+  margin: 0 0 1rem;
+}
+
+.hp-loja a,
+.hp-tabela a {
+  color: inherit;
+}
+
+.hp-cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.hp-cartoes > div {
+  background: var(--hp-fundo-cartao);
+  border: 1px solid var(--hp-borda);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.hp-cartoes dt {
+  font-size: 0.85rem;
+  color: var(--hp-suave);
+}
+
+.hp-cartoes dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-cartoes dd.hp-sub {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--hp-suave);
+}
+
+.hp-veredito {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.hp-avisos {
+  background: var(--hp-aviso-fundo);
+  border: 1px solid var(--hp-aviso-borda);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem 0.5rem 1.75rem;
+  font-size: 0.9rem;
+}
+
+.hp-figura {
+  margin: 1rem 0;
+}
+
+.hp-svg {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.hp-grade {
+  stroke: var(--hp-grade);
+  stroke-width: 1;
+}
+
+.hp-eixo {
+  fill: var(--hp-suave);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-linha {
+  fill: none;
+  stroke: var(--hp-linha);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.hp-ponto {
+  stroke: var(--hp-fundo-cartao);
+  stroke-width: 1.5;
+}
+
+.hp-ponto.hp-arquivo,
+.hp-marca.hp-arquivo {
+  fill: var(--hp-arquivo);
+  background: var(--hp-arquivo);
+}
+
+.hp-ponto.hp-loja,
+.hp-marca.hp-loja {
+  fill: var(--hp-loja);
+  background: var(--hp-loja);
+}
+
+.hp-ponto.hp-telegram,
+.hp-marca.hp-telegram {
+  fill: var(--hp-telegram);
+  background: var(--hp-telegram);
+}
+
+.hp-legenda {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--hp-suave);
+}
+
+.hp-legenda li {
+  display: flex;
+  align-items: center;
+}
+
+.hp-marca {
+  flex: none;
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: -0.05rem;
+}
+
+.hp-detalhes summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.25rem 0;
+}
+
+.hp-rolagem {
+  overflow-x: auto;
+}
+
+.hp-tabela {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 0;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-tabela th,
+.hp-tabela td {
+  border: 1px solid var(--hp-borda);
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+}
+
+.hp-tabela th {
+  background: var(--hp-fundo-cartao);
+}
+
+.hp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
