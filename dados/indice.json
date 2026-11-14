@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-14T16:50:26.116Z",
+ "atualizadoEm": "2026-11-14T20:12:50.681Z",
  "produtos": [
   {
    "loja": "amazon",
@@ -10,6 +10,16 @@
    "quantidade": 29,
    "ultimoPrecoCentavos": 479880,
    "menorPrecoCentavos": 479880
+  },
+  {
+   "loja": "amazon",
+   "id": "B0F8PP7VMS",
+   "url": "https://www.amazon.com.br/dp/B0F8PP7VMS",
+   "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
+   "atualizadoEm": "2026-11-14T20:11:47.764Z",
+   "quantidade": 2,
+   "ultimoPrecoCentavos": 394155,
+   "menorPrecoCentavos": 394155
   },
   {
    "loja": "amazon",

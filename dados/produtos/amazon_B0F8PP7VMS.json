@@ -1,0 +1,58 @@
+{
+ "produto": {
+  "loja": "amazon",
+  "id": "B0F8PP7VMS",
+  "url": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+ },
+ "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
+ "criadoEm": "2026-11-14T20:11:47.764Z",
+ "atualizadoEm": "2026-11-14T20:11:47.764Z",
+ "copiasLidas": [
+  "20251112050204",
+  "20251118123944"
+ ],
+ "copiasRestantes": 0,
+ "pontos": [
+  {
+   "data": "2025-11-12T05:02:04Z",
+   "precoCentavos": 543789,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251112050204/https://www.amazon.com.br/gp/product/B0F8PP7VMS?smid=A122ZHUG7SODV0&th=1&linkCode=sl1&tag=peguepromocoe-20&linkId=bae207a52960934a74ff792d36032557&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2026-11-14T20:12:50.681Z",
+   "precoCentavos": 394155,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+  }
+ ],
+ "resumo": {
+  "quantidade": 2,
+  "menor": {
+   "data": "2026-11-14T20:12:50.681Z",
+   "precoCentavos": 394155,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+  },
+  "maior": {
+   "data": "2025-11-12T05:02:04Z",
+   "precoCentavos": 543789,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251112050204/https://www.amazon.com.br/gp/product/B0F8PP7VMS?smid=A122ZHUG7SODV0&th=1&linkCode=sl1&tag=peguepromocoe-20&linkId=bae207a52960934a74ff792d36032557&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  "mediaCentavos": 468972,
+  "atual": {
+   "data": "2026-11-14T20:12:50.681Z",
+   "precoCentavos": 394155,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+  },
+  "primeiraData": "2025-11-12T05:02:04Z",
+  "veredito": "Poucos registros ainda: dá para ver o preço, mas não para dizer se está bom."
+ }
+}
