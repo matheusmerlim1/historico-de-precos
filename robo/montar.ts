@@ -105,7 +105,9 @@ export async function montarHistorico(
     aoAvancar: (lidas, total) => avisar(`Lendo cópias antigas da página: ${lidas} de ${total}...`),
   });
   if (arquivo.bloqueado) avisos.push('O Internet Archive pediu uma pausa; o resto das cópias antigas fica para depois.');
-  if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !semTempo() && !antes?.copiasLidas?.length) {
+  if (arquivo.indisponivel) {
+    avisos.push('Não consegui consultar o Internet Archive agora; tente de novo mais tarde para ver os preços antigos.');
+  } else if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !semTempo() && !antes?.copiasLidas?.length) {
     avisos.push('O Internet Archive não tem cópias desta página; o histórico desta loja cresce com a conferência diária.');
   }
 
@@ -115,7 +117,7 @@ export async function montarHistorico(
     await procurarOutras(0);
   }
   if (opcoes.copiasComparador > 0 && comparador) await procurarOutras(opcoes.copiasComparador);
-  if (titulo && !comparador && !semTempo()) {
+  if (titulo && !comparador && outras.length === 0 && !semTempo()) {
     avisos.push('Não achei este mesmo produto (mesmo modelo e capacidade) em outras lojas.');
   }
   if (semTempo() && opcoes.prazoMs != null) {

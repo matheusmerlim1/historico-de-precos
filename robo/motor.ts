@@ -48,6 +48,12 @@ type Buscar = (url: string, init?: RequestInit) => Promise<Response>;
 
 const ARQUIVO = { 'User-Agent': 'historico-de-precos/1.0 (+https://github.com/matheusmerlim1/historico-de-precos)' };
 
+export class ArquivoIndisponivel extends Error {
+  constructor() {
+    super('Não foi possível consultar o Internet Archive agora.');
+  }
+}
+
 export class BloqueadoPeloArquivo extends Error {
   constructor() {
     super('O Internet Archive pediu para esperar (muitos pedidos seguidos).');
@@ -261,6 +267,7 @@ export async function listarCopiasArquivadas(produto: ProdutoLink, buscar: Busca
 
 export async function listarCopiasDosEnderecos(padroes: string[], buscar: Buscar = fetch): Promise<CopiaArquivada[]> {
   const porDia = new Map<string, CopiaArquivada & { tamanho: number }>();
+  let falhas = 0;
   for (const padrao of padroes) {
     const url =
       'https://web.archive.org/cdx/search/cdx?output=json&fl=timestamp,original,statuscode,length' +
@@ -269,11 +276,15 @@ export async function listarCopiasDosEnderecos(padroes: string[], buscar: Buscar
     try {
       const resposta = await buscar(url, { headers: ARQUIVO });
       if (resposta.status === 429) throw new BloqueadoPeloArquivo();
-      if (!resposta.ok) continue;
+      if (!resposta.ok) {
+        falhas++;
+        continue;
+      }
       const texto = await resposta.text();
       linhas = texto.trim() ? (JSON.parse(texto) as string[][]) : [];
     } catch (erro) {
       if (erro instanceof BloqueadoPeloArquivo) throw erro;
+      falhas++;
       continue;
     }
     for (const linha of linhas.slice(1)) {
@@ -288,6 +299,7 @@ export async function listarCopiasDosEnderecos(padroes: string[], buscar: Buscar
       }
     }
   }
+  if (padroes.length > 0 && falhas === padroes.length) throw new ArquivoIndisponivel();
   return [...porDia.values()]
     .map(({ timestamp, original }) => ({ timestamp, original }))
     .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
@@ -340,6 +352,8 @@ export interface HistoricoArquivado {
   totalDeCopias: number;
   faltam: number;
   bloqueado: boolean;
+  /** O Internet Archive não respondeu (fora do ar ou lento): não dá para dizer se há cópias. */
+  indisponivel: boolean;
 }
 
 const esperar = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
@@ -359,7 +373,10 @@ export async function buscarHistoricoArquivado(
     todas = await listarCopiasArquivadas(produto, buscar);
   } catch (erro) {
     if (erro instanceof BloqueadoPeloArquivo) {
-      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: true };
+      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: true, indisponivel: false };
+    }
+    if (erro instanceof ArquivoIndisponivel) {
+      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: false, indisponivel: true };
     }
     throw erro;
   }
@@ -392,7 +409,15 @@ export async function buscarHistoricoArquivado(
   }
 
   pontos.sort((a, b) => a.data.localeCompare(b.data));
-  return { pontos, titulo, lidas, totalDeCopias: todas.length, faltam: novas.length - lidas.length, bloqueado };
+  return {
+    pontos,
+    titulo,
+    lidas,
+    totalDeCopias: todas.length,
+    faltam: novas.length - lidas.length,
+    bloqueado,
+    indisponivel: false,
+  };
 }
 
 /** Preço de agora, lido direto da página da loja (a Amazon às vezes responde com captcha). */
@@ -736,8 +761,8 @@ export async function buscarOutrasLojas(
   try {
     copias = await listarCopiasDosEnderecos([pagina.url.replace(/^https?:\/\//, '')], buscar);
   } catch (erro) {
-    if (!(erro instanceof BloqueadoPeloArquivo)) throw erro;
-    bloqueado = true;
+    if (erro instanceof BloqueadoPeloArquivo) bloqueado = true;
+    else if (!(erro instanceof ArquivoIndisponivel)) throw erro;
   }
   const novas = copias.filter((c) => !opcoes.jaLidas?.has(c.timestamp));
   const escolhidas = espalharNoTempo(novas, opcoes.maximoDeCopias ?? 8);

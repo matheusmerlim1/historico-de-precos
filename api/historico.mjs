@@ -1,5 +1,10 @@
 // robo/motor.ts
 var ARQUIVO = { "User-Agent": "historico-de-precos/1.0 (+https://github.com/matheusmerlim1/historico-de-precos)" };
+var ArquivoIndisponivel = class extends Error {
+  constructor() {
+    super("N\xE3o foi poss\xEDvel consultar o Internet Archive agora.");
+  }
+};
 var BloqueadoPeloArquivo = class extends Error {
   constructor() {
     super("O Internet Archive pediu para esperar (muitos pedidos seguidos).");
@@ -165,17 +170,22 @@ async function listarCopiasArquivadas(produto, buscar = fetch) {
 }
 async function listarCopiasDosEnderecos(padroes, buscar = fetch) {
   const porDia = /* @__PURE__ */ new Map();
+  let falhas = 0;
   for (const padrao of padroes) {
     const url = `https://web.archive.org/cdx/search/cdx?output=json&fl=timestamp,original,statuscode,length&matchType=prefix&filter=statuscode:200&collapse=timestamp:10&url=${encodeURIComponent(padrao)}`;
     let linhas = [];
     try {
       const resposta = await buscar(url, { headers: ARQUIVO });
       if (resposta.status === 429) throw new BloqueadoPeloArquivo();
-      if (!resposta.ok) continue;
+      if (!resposta.ok) {
+        falhas++;
+        continue;
+      }
       const texto = await resposta.text();
       linhas = texto.trim() ? JSON.parse(texto) : [];
     } catch (erro) {
       if (erro instanceof BloqueadoPeloArquivo) throw erro;
+      falhas++;
       continue;
     }
     for (const linha of linhas.slice(1)) {
@@ -190,6 +200,7 @@ async function listarCopiasDosEnderecos(padroes, buscar = fetch) {
       }
     }
   }
+  if (padroes.length > 0 && falhas === padroes.length) throw new ArquivoIndisponivel();
   return [...porDia.values()].map(({ timestamp, original }) => ({ timestamp, original })).sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 async function lerCopiaArquivada(produto, copia, buscar = fetch) {
@@ -225,7 +236,10 @@ async function buscarHistoricoArquivado(produto, opcoes = {}) {
     todas = await listarCopiasArquivadas(produto, buscar);
   } catch (erro) {
     if (erro instanceof BloqueadoPeloArquivo) {
-      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: true };
+      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: true, indisponivel: false };
+    }
+    if (erro instanceof ArquivoIndisponivel) {
+      return { pontos: [], titulo: null, lidas: [], totalDeCopias: 0, faltam: 0, bloqueado: false, indisponivel: true };
     }
     throw erro;
   }
@@ -255,7 +269,15 @@ async function buscarHistoricoArquivado(produto, opcoes = {}) {
     opcoes.aoAvancar?.(lidas.length, escolhidas.length);
   }
   pontos.sort((a, b) => a.data.localeCompare(b.data));
-  return { pontos, titulo, lidas, totalDeCopias: todas.length, faltam: novas.length - lidas.length, bloqueado };
+  return {
+    pontos,
+    titulo,
+    lidas,
+    totalDeCopias: todas.length,
+    faltam: novas.length - lidas.length,
+    bloqueado,
+    indisponivel: false
+  };
 }
 async function lerPrecoAtual(produto, buscar = fetch) {
   try {
@@ -518,8 +540,8 @@ async function buscarOutrasLojas(produto, titulo, opcoes = {}) {
   try {
     copias = await listarCopiasDosEnderecos([pagina.url.replace(/^https?:\/\//, "")], buscar);
   } catch (erro) {
-    if (!(erro instanceof BloqueadoPeloArquivo)) throw erro;
-    bloqueado = true;
+    if (erro instanceof BloqueadoPeloArquivo) bloqueado = true;
+    else if (!(erro instanceof ArquivoIndisponivel)) throw erro;
   }
   const novas = copias.filter((c) => !opcoes.jaLidas?.has(c.timestamp));
   const escolhidas = espalharNoTempo(novas, opcoes.maximoDeCopias ?? 8);
@@ -602,7 +624,9 @@ async function montarHistorico(produto, antes, opcoes) {
     aoAvancar: (lidas, total) => avisar(`Lendo c\xF3pias antigas da p\xE1gina: ${lidas} de ${total}...`)
   });
   if (arquivo.bloqueado) avisos.push("O Internet Archive pediu uma pausa; o resto das c\xF3pias antigas fica para depois.");
-  if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !semTempo() && !antes?.copiasLidas?.length) {
+  if (arquivo.indisponivel) {
+    avisos.push("N\xE3o consegui consultar o Internet Archive agora; tente de novo mais tarde para ver os pre\xE7os antigos.");
+  } else if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !semTempo() && !antes?.copiasLidas?.length) {
     avisos.push("O Internet Archive n\xE3o tem c\xF3pias desta p\xE1gina; o hist\xF3rico desta loja cresce com a confer\xEAncia di\xE1ria.");
   }
   if (!titulo && arquivo.titulo) {
@@ -611,7 +635,7 @@ async function montarHistorico(produto, antes, opcoes) {
     await procurarOutras(0);
   }
   if (opcoes.copiasComparador > 0 && comparador) await procurarOutras(opcoes.copiasComparador);
-  if (titulo && !comparador && !semTempo()) {
+  if (titulo && !comparador && outras.length === 0 && !semTempo()) {
     avisos.push("N\xE3o achei este mesmo produto (mesmo modelo e capacidade) em outras lojas.");
   }
   if (semTempo() && opcoes.prazoMs != null) {
