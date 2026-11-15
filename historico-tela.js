@@ -149,7 +149,7 @@
     const visiveis = todas.filter((s) => s.cor > 0);
     const fora = todas.length - visiveis.length;
     const itens = visiveis.map((s) => `<li><span class="hp-marca hp-s${s.cor}" aria-hidden="true"></span>${esc(s.nome)}</li>`);
-    if (fora > 0) itens.push(`<li>+${fora} lojas só na tabela</li>`);
+    if (fora > 0) itens.push(`<li>+${fora} ${fora === 1 ? "loja" : "lojas"} só na tabela</li>`);
     return `<ul class="hp-legenda">${itens.join('')}</ul>`;
   }
 
