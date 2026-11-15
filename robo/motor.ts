@@ -600,6 +600,14 @@ export function escolherNaBuscaDoBuscape(html: string, titulo: string): PaginaCo
   return nota >= 0.75 ? melhor : null;
 }
 
+// Mesma loja com nomes diferentes ao longo do tempo (o Pontofrio virou Ponto).
+const APELIDOS: Record<string, string> = { pontofrio: 'Ponto', 'ponto frio': 'Ponto' };
+
+function nomeDaLoja(nome: string): string {
+  const limpo = nome.trim().replace(/\s+/g, ' ');
+  return APELIDOS[limpo.toLowerCase()] ?? limpo;
+}
+
 /** Ofertas de cada loja numa página de produto do Buscapé (a mais barata de cada loja, preço à vista). */
 export function lerOfertasDoBuscape(html: string): OfertaDeLoja[] {
   const dados = dadosNext(html) as {
@@ -614,7 +622,7 @@ export function lerOfertasDoBuscape(html: string): OfertaDeLoja[] {
   }>;
   const porLoja = new Map<string, number>();
   for (const o of lista) {
-    const vendedor = (o.sellerName ?? o.merchantName ?? '').trim();
+    const vendedor = nomeDaLoja(o.sellerName ?? o.merchantName ?? '');
     const valor = typeof o.price === 'number' && o.price > 0 ? o.price : o.totalPrice;
     if (!vendedor || typeof valor !== 'number' || !(valor > 0)) continue;
     const centavos = Math.round(valor * 100);

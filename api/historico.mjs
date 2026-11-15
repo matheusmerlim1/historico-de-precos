@@ -430,13 +430,18 @@ function escolherNaBuscaDoBuscape(html, titulo) {
   }
   return nota >= 0.75 ? melhor : null;
 }
+var APELIDOS = { pontofrio: "Ponto", "ponto frio": "Ponto" };
+function nomeDaLoja(nome) {
+  const limpo = nome.trim().replace(/\s+/g, " ");
+  return APELIDOS[limpo.toLowerCase()] ?? limpo;
+}
 function lerOfertasDoBuscape(html) {
   const dados = dadosNext(html);
   const ofertas = dados?.props?.initialReduxState?.offers;
   const lista = [...ofertas?.displayOffers ?? [], ...ofertas?.offerList ?? []];
   const porLoja = /* @__PURE__ */ new Map();
   for (const o of lista) {
-    const vendedor = (o.sellerName ?? o.merchantName ?? "").trim();
+    const vendedor = nomeDaLoja(o.sellerName ?? o.merchantName ?? "");
     const valor = typeof o.price === "number" && o.price > 0 ? o.price : o.totalPrice;
     if (!vendedor || typeof valor !== "number" || !(valor > 0)) continue;
     const centavos = Math.round(valor * 100);
