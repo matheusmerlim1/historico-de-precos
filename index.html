@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Histórico de preço — Amazon e Mercado Livre</title>
     <meta name="description" content="Cole o link de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo." />
-    <link rel="stylesheet" href="estilo.css?v=3" />
-    <link rel="stylesheet" href="historico-tela.css?v=3" />
+    <link rel="stylesheet" href="estilo.css?v=5" />
+    <link rel="stylesheet" href="historico-tela.css?v=5" />
   </head>
   <body>
     <main class="pagina">
       <h1>Histórico de preço</h1>
       <p class="chamada">
         Cole o link de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo,
-        para saber se a promoção é de verdade.
+        nessa loja e nas outras que vendem o mesmo produto, para saber se a promoção é de verdade.
       </p>
 
       <section class="bloco" aria-labelledby="titulo-busca">
@@ -24,18 +24,9 @@
             <input type="url" id="link" name="link" placeholder="https://www.amazon.com.br/dp/..." autocomplete="off" required />
             <button type="submit">Ver histórico</button>
           </div>
-          <p class="dica">Aceita links da amazon.com.br e do mercadolivre.com.br.</p>
+          <p class="dica">Aceita links da amazon.com.br e do mercadolivre.com.br, inclusive os curtos (amzn.to). A primeira consulta de um produto leva até 1 minuto.</p>
         </form>
         <p id="status" role="status"></p>
-        <div id="pedido" hidden>
-          <p>
-            Este produto ainda não está na lista. O robô do site busca o histórico dele: abra o pedido no GitHub
-            (precisa de uma conta gratuita) e clique em <strong>Submit new issue</strong>. Em poucos minutos o
-            histórico aparece aqui, e o robô passa a conferir o preço todo dia.
-          </p>
-          <a id="link-pedido" class="botao" href="#" target="_blank" rel="noopener">Pedir o histórico deste produto<span class="hp-sr"> (abre o GitHub em nova aba)</span></a>
-          <p class="dica" id="aguardando" hidden>Esperando o robô… esta página confere sozinha a cada 30 segundos.</p>
-        </div>
         <div id="resultado"></div>
       </section>
 
@@ -47,9 +38,9 @@
       <section class="bloco" aria-labelledby="titulo-fontes">
         <h2 id="titulo-fontes">De onde vêm os preços</h2>
         <ul class="fontes">
-          <li><strong>Cópias antigas da página</strong>: o Internet Archive guarda versões da página do produto em várias datas; o robô lê o preço de cada uma.</li>
-          <li><strong>Conferência diária</strong>: depois do primeiro pedido, o robô lê o preço na loja todos os dias.</li>
-          <li>Produtos sem cópias antigas começam com poucos pontos e o gráfico cresce com o tempo.</li>
+          <li><strong>Cópias antigas da página</strong>: o Internet Archive guarda versões da página do produto em várias datas; o site lê o preço de cada uma.</li>
+          <li><strong>Outras lojas</strong>: o site acha o mesmo produto (mesmo modelo e capacidade) no comparador Buscapé e lê o preço de cada loja, hoje e nas cópias antigas.</li>
+          <li><strong>Conferência diária</strong>: os produtos da lista abaixo têm o preço lido todo dia, então o gráfico continua crescendo.</li>
         </ul>
       </section>
 
@@ -61,8 +52,9 @@
       </footer>
     </main>
 
-    <script src="historico-tela.js?v=3"></script>
-    <script src="pagina.js?v=3"></script>
+    <script src="config.js?v=5"></script>
+    <script src="historico-tela.js?v=5"></script>
+    <script src="pagina.js?v=5"></script>
 <!-- === Botao de volta ao portfolio - cole antes de </body> === -->
 <nav aria-label="Portf&oacute;lio">
 <a id="mr-portfolio-btn" href="https://matheusmerlim1.github.io/" target="_blank" rel="noopener"

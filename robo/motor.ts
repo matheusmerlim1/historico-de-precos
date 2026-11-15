@@ -19,6 +19,8 @@ export interface PontoDePreco {
   precoDeCentavos: number | null;
   fonte: Fonte;
   link?: string;
+  /** Outra loja onde o mesmo produto é vendido (vazio = a loja do link consultado). */
+  loja?: string;
 }
 
 export interface LeituraDaPagina {
@@ -253,8 +255,12 @@ const TAMANHO_MINIMO_DA_COPIA = 40000;
 
 /** Lista as cópias da página do produto guardadas no Internet Archive (a maior de cada dia). */
 export async function listarCopiasArquivadas(produto: ProdutoLink, buscar: Buscar = fetch): Promise<CopiaArquivada[]> {
+  return listarCopiasDosEnderecos(padroesDeBusca(produto), buscar);
+}
+
+export async function listarCopiasDosEnderecos(padroes: string[], buscar: Buscar = fetch): Promise<CopiaArquivada[]> {
   const porDia = new Map<string, CopiaArquivada & { tamanho: number }>();
-  for (const padrao of padroesDeBusca(produto)) {
+  for (const padrao of padroes) {
     const url =
       'https://web.archive.org/cdx/search/cdx?output=json&fl=timestamp,original,statuscode,length' +
       `&matchType=prefix&filter=statuscode:200&collapse=timestamp:10&url=${encodeURIComponent(padrao)}`;
@@ -414,7 +420,7 @@ export async function lerPrecoAtual(
 export function juntarPontos(...listas: PontoDePreco[][]): PontoDePreco[] {
   const unicos = new Map<string, PontoDePreco>();
   for (const ponto of listas.flat()) {
-    const chave = `${ponto.fonte}|${ponto.data.slice(0, 10)}|${ponto.precoCentavos}`;
+    const chave = `${ponto.loja ?? ''}|${ponto.fonte}|${ponto.data.slice(0, 10)}|${ponto.precoCentavos}`;
     if (!unicos.has(chave)) unicos.set(chave, ponto);
   }
   return [...unicos.values()].sort((a, b) => a.data.localeCompare(b.data));
@@ -469,4 +475,273 @@ export function resumir(pontos: PontoDePreco[]): Resumo {
     primeiraData: ordenados[0]!.data,
     veredito,
   };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Mesmo produto em outras lojas. O Buscapé reúne as ofertas de várias lojas (KaBuM!, Magazine
+// Luiza, Casas Bahia...) numa página pública por produto; achamos essa página pelo título e lemos o
+// preço de cada loja nela e nas cópias antigas dela guardadas no Internet Archive.
+// ---------------------------------------------------------------------------------------------
+
+const PALAVRAS_VAZIAS = new Set([
+  'para', 'com', 'sem', 'de', 'da', 'do', 'das', 'dos', 'e', 'em', 'cor', 'preto', 'preta', 'branco', 'branca',
+  'novo', 'nova', 'original', 'modelo', 'tela', 'smartphone', 'celular', 'kit', 'unidade', 'unidades',
+]);
+
+const VARIANTES = new Set(['fe', 'plus', 'ultra', 'edge', 'pro', 'max', 'mini', 'lite', 'slim', 'neo', 'prime']);
+const USADO = /\b(usado|recondicionado|vitrine|seminovo)\b/;
+const UNIDADE = /^\d+(gb|tb|mb|mp|mah|hz|w|g|k|pol)$/;
+
+export function normalizarTexto(texto: string): string {
+  return texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/(\d+)\s+(gb|tb|mb|mp|mah|hz|w)\b/g, '$1$2')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+/** As palavras que identificam o produto (as primeiras do título, onde ficam marca e modelo). */
+export function palavrasDoTitulo(titulo: string, maximo = 8): string[] {
+  const unicas: string[] = [];
+  for (const palavra of normalizarTexto(titulo).split(' ')) {
+    const util = /\d/.test(palavra) ? palavra.length >= 2 : palavra.length >= 3 || VARIANTES.has(palavra);
+    if (util && !PALAVRAS_VAZIAS.has(palavra) && !unicas.includes(palavra)) unicas.push(palavra);
+    if (unicas.length >= maximo) break;
+  }
+  return unicas;
+}
+
+/**
+ * Nota de 0 a 1 para "é o mesmo produto": 0 quando a variante (Ultra, FE, Plus...), a capacidade
+ * (256GB...) ou o estado (usado) é diferente; senão, a parte das palavras do nome mais curto que
+ * aparecem no outro.
+ */
+export function semelhancaDeProduto(tituloA: string, tituloB: string): number {
+  const textoA = normalizarTexto(tituloA);
+  const textoB = normalizarTexto(tituloB);
+  const a = new Set(textoA.split(' ').filter(Boolean));
+  const b = new Set(textoB.split(' ').filter(Boolean));
+  const variantes = (x: Set<string>) => [...x].filter((p) => VARIANTES.has(p)).sort().join(',');
+  if (variantes(a) !== variantes(b)) return 0;
+  const capacidades = (x: Set<string>) => [...x].filter((p) => /^\d+(gb|tb)$/.test(p));
+  const capA = capacidades(a);
+  const capB = capacidades(b);
+  if (capA.length && capB.length && !capA.some((c) => capB.includes(c))) return 0;
+  if (USADO.test(textoA) !== USADO.test(textoB)) return 0;
+  const aMaisCurto = tituloA.length <= tituloB.length;
+  const curto = aMaisCurto ? a : b;
+  const outro = aMaisCurto ? b : a;
+  // Códigos de modelo (S24, A55, G7...) e números soltos (iPhone 15) do nome curto têm de
+  // aparecer iguais no outro: "S24 Ultra" e "S25 Ultra" diferem só nisso.
+  for (const p of curto) {
+    const ehModelo = /[a-z]/.test(p) && /\d/.test(p) && !UNIDADE.test(p);
+    const ehNumero = /^\d{1,3}$/.test(p);
+    if ((ehModelo || ehNumero) && !outro.has(p)) return 0;
+  }
+  const curtas = palavrasDoTitulo(aMaisCurto ? tituloA : tituloB, 8);
+  if (curtas.length === 0) return 0;
+  return curtas.filter((p) => outro.has(p)).length / curtas.length;
+}
+
+/** Texto para buscar o produto num comparador: o nome do modelo e a capacidade. */
+export function consultaDeBusca(titulo: string): string {
+  const nome = titulo.split(/,| - | \| /)[0] ?? titulo;
+  const palavras = palavrasDoTitulo(nome, 5);
+  const capacidades = normalizarTexto(titulo)
+    .split(' ')
+    .filter((p) => /^\d+(gb|tb)$/.test(p));
+  for (const c of capacidades) {
+    if (palavras.length >= 7) break;
+    if (!palavras.includes(c)) palavras.push(c);
+  }
+  return palavras.join(' ');
+}
+
+export interface PaginaComparador {
+  nome: string;
+  url: string;
+}
+
+export interface OfertaDeLoja {
+  vendedor: string;
+  precoCentavos: number;
+}
+
+function dadosNext(html: string): unknown {
+  const m = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) return null;
+  try {
+    return JSON.parse(m[1]!);
+  } catch {
+    return null;
+  }
+}
+
+/** Escolhe, na busca do Buscapé, a página do mesmo produto (ou nenhuma, se não tiver certeza). */
+export function escolherNaBuscaDoBuscape(html: string, titulo: string): PaginaComparador | null {
+  const dados = dadosNext(html) as { props?: { initialReduxState?: { hits?: { hits?: unknown[] } } } } | null;
+  const resultados = (dados?.props?.initialReduxState?.hits?.hits ?? []) as Array<{
+    name?: string;
+    url?: string;
+    type?: string;
+  }>;
+  let melhor: PaginaComparador | null = null;
+  let nota = 0;
+  for (const r of resultados) {
+    if (!r.name || !r.url || r.type !== 'product' || !/^\/[a-z0-9-]+\/[a-z0-9-]+$/.test(r.url)) continue;
+    const n = semelhancaDeProduto(titulo, r.name);
+    if (n > nota) {
+      nota = n;
+      melhor = { nome: r.name, url: `https://www.buscape.com.br${r.url}` };
+    }
+  }
+  return nota >= 0.75 ? melhor : null;
+}
+
+/** Ofertas de cada loja numa página de produto do Buscapé (a mais barata de cada loja, preço à vista). */
+export function lerOfertasDoBuscape(html: string): OfertaDeLoja[] {
+  const dados = dadosNext(html) as {
+    props?: { initialReduxState?: { offers?: { displayOffers?: unknown[]; offerList?: unknown[] } } };
+  } | null;
+  const ofertas = dados?.props?.initialReduxState?.offers;
+  const lista = [...(ofertas?.displayOffers ?? []), ...(ofertas?.offerList ?? [])] as Array<{
+    sellerName?: string;
+    merchantName?: string;
+    price?: number;
+    totalPrice?: number;
+  }>;
+  const porLoja = new Map<string, number>();
+  for (const o of lista) {
+    const vendedor = (o.sellerName ?? o.merchantName ?? '').trim();
+    const valor = typeof o.price === 'number' && o.price > 0 ? o.price : o.totalPrice;
+    if (!vendedor || typeof valor !== 'number' || !(valor > 0)) continue;
+    const centavos = Math.round(valor * 100);
+    const atual = porLoja.get(vendedor);
+    if (atual == null || centavos < atual) porLoja.set(vendedor, centavos);
+  }
+  return [...porLoja].map(([vendedor, precoCentavos]) => ({ vendedor, precoCentavos }));
+}
+
+const NOME_DA_LOJA: Record<Loja, RegExp> = {
+  amazon: /^amazon(\.com\.br)?$/i,
+  mercadolivre: /^mercado\s*livre$/i,
+};
+
+function pontosDasOfertas(
+  produto: ProdutoLink,
+  ofertas: OfertaDeLoja[],
+  data: string,
+  fonte: Fonte,
+  link: string,
+): PontoDePreco[] {
+  return ofertas.map((o) => ({
+    data,
+    precoCentavos: o.precoCentavos,
+    precoDeCentavos: null,
+    fonte,
+    link,
+    ...(NOME_DA_LOJA[produto.loja].test(o.vendedor) ? {} : { loja: o.vendedor }),
+  }));
+}
+
+export interface ResultadoOutrasLojas {
+  pagina: PaginaComparador | null;
+  pontos: PontoDePreco[];
+  lidas: string[];
+  bloqueado: boolean;
+}
+
+/** Procura o mesmo produto no Buscapé e lê o preço de cada loja hoje e nas cópias antigas. */
+export async function buscarOutrasLojas(
+  produto: ProdutoLink,
+  titulo: string,
+  opcoes: OpcoesHistorico & { pagina?: PaginaComparador | null } = {},
+): Promise<ResultadoOutrasLojas> {
+  const buscar = opcoes.buscar ?? fetch;
+  let pagina = opcoes.pagina ?? null;
+  if (!pagina) {
+    const consulta = consultaDeBusca(titulo);
+    try {
+      const resp = await buscar(`https://www.buscape.com.br/search?q=${encodeURIComponent(consulta)}`, { headers: NAVEGADOR });
+      if (resp.ok) pagina = escolherNaBuscaDoBuscape(await resp.text(), titulo);
+    } catch {
+      pagina = null;
+    }
+  }
+  if (!pagina) return { pagina: null, pontos: [], lidas: [], bloqueado: false };
+
+  const pontos: PontoDePreco[] = [];
+  try {
+    const resp = await buscar(pagina.url, { headers: NAVEGADOR });
+    if (resp.ok) {
+      const ofertas = lerOfertasDoBuscape(await resp.text());
+      pontos.push(...pontosDasOfertas(produto, ofertas, new Date().toISOString(), 'loja', pagina.url));
+    }
+  } catch {
+    // sem as ofertas de hoje; seguem as cópias antigas
+  }
+
+  const lidas: string[] = [];
+  let bloqueado = false;
+  let copias: CopiaArquivada[] = [];
+  try {
+    copias = await listarCopiasDosEnderecos([pagina.url.replace(/^https?:\/\//, '')], buscar);
+  } catch (erro) {
+    if (!(erro instanceof BloqueadoPeloArquivo)) throw erro;
+    bloqueado = true;
+  }
+  const novas = copias.filter((c) => !opcoes.jaLidas?.has(c.timestamp));
+  const escolhidas = espalharNoTempo(novas, opcoes.maximoDeCopias ?? 8);
+  for (const copia of escolhidas) {
+    if (lidas.length > 0) await esperar(opcoes.pausaMs ?? 1500);
+    try {
+      const resp = await buscar(`https://web.archive.org/web/${copia.timestamp}id_/${copia.original}`, { headers: ARQUIVO });
+      if (resp.status === 429) throw new BloqueadoPeloArquivo();
+      lidas.push(copia.timestamp);
+      if (resp.ok) {
+        const entregue = resp.url.match(/\/web\/(\d{14})id_\//)?.[1] ?? copia.timestamp;
+        const ofertas = lerOfertasDoBuscape(await resp.text());
+        const link = `https://web.archive.org/web/${entregue}/${copia.original}`;
+        pontos.push(...pontosDasOfertas(produto, ofertas, timestampParaIso(entregue), 'arquivo', link));
+      }
+    } catch (erro) {
+      if (!(erro instanceof BloqueadoPeloArquivo)) throw erro;
+      bloqueado = true;
+      break;
+    }
+    opcoes.aoAvancar?.(lidas.length, escolhidas.length);
+  }
+  return { pagina, pontos, lidas, bloqueado };
+}
+
+export interface ResumoDeLoja {
+  loja: string | null;
+  quantidade: number;
+  ultimo: PontoDePreco;
+  menor: PontoDePreco;
+}
+
+/** Último e menor preço de cada loja (a loja do link primeiro, depois da mais barata hoje à mais cara). */
+export function resumirPorLoja(pontos: PontoDePreco[]): ResumoDeLoja[] {
+  const grupos = new Map<string | null, PontoDePreco[]>();
+  for (const p of pontos) {
+    const chave = p.loja ?? null;
+    grupos.set(chave, [...(grupos.get(chave) ?? []), p]);
+  }
+  const lista = [...grupos].map(([loja, doGrupo]) => {
+    const ordenados = [...doGrupo].sort((a, b) => a.data.localeCompare(b.data));
+    return {
+      loja,
+      quantidade: ordenados.length,
+      ultimo: ordenados.at(-1)!,
+      menor: ordenados.reduce((m, p) => (p.precoCentavos < m.precoCentavos ? p : m)),
+    };
+  });
+  return lista.sort((a, b) => {
+    if (a.loja === null) return -1;
+    if (b.loja === null) return 1;
+    return a.ultimo.precoCentavos - b.ultimo.precoCentavos;
+  });
 }

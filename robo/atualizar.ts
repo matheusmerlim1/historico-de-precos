@@ -1,36 +1,19 @@
-// Robô da página pública: busca o histórico de preço e grava em dados/.
+// Robô diário da página pública: soma ao histórico salvo em dados/ o preço do dia, mais cópias
+// antigas e as outras lojas, para os produtos da lista (dados/indice.json).
 //   node --experimental-strip-types robo/atualizar.ts <link> [<link>...]
-//   node --experimental-strip-types robo/atualizar.ts --pedido pedido.txt --resposta resposta.md
-//   node --experimental-strip-types robo/atualizar.ts --todos
-// Roda no GitHub Actions (pedido aberto como issue e conferência diária) ou no PC.
+//   node --experimental-strip-types robo/atualizar.ts --todos [--minutos 20]
+// Roda no GitHub Actions (todo dia) ou no PC.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  buscarHistoricoArquivado,
-  juntarPontos,
-  lerPrecoAtual,
-  resolverLink,
-  resumir,
-} from './motor.ts';
-import type { PontoDePreco, ProdutoLink, Resumo } from './motor.ts';
+import { resolverLink } from './motor.ts';
+import type { ProdutoLink } from './motor.ts';
+import { montarHistorico } from './montar.ts';
+import type { ArquivoProduto } from './montar.ts';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PASTA_PRODUTOS = path.join(RAIZ, 'dados', 'produtos');
 const INDICE = path.join(RAIZ, 'dados', 'indice.json');
-const LIMITE_DE_PRODUTOS = 500;
-const ENDERECO_PAGINA = 'https://matheusmerlim1.github.io/historico-de-precos/';
-
-interface ArquivoProduto {
-  produto: ProdutoLink;
-  titulo: string | null;
-  criadoEm: string;
-  atualizadoEm: string;
-  copiasLidas: string[];
-  copiasRestantes: number;
-  pontos: PontoDePreco[];
-  resumo: Resumo;
-}
 
 interface ItemIndice {
   loja: string;
@@ -39,6 +22,7 @@ interface ItemIndice {
   titulo: string | null;
   atualizadoEm: string;
   quantidade: number;
+  lojas: number;
   ultimoPrecoCentavos: number | null;
   menorPrecoCentavos: number | null;
 }
@@ -60,44 +44,11 @@ function gravarJson(arquivo: string, dados: unknown): void {
   fs.writeFileSync(arquivo, JSON.stringify(dados, null, 1) + '\n', 'utf-8');
 }
 
-function reais(centavos: number | null | undefined): string {
-  if (centavos == null) return '—';
-  return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
-export async function atualizarProduto(
-  produto: ProdutoLink,
-  maximoDeCopias: number,
-): Promise<{ dados: ArquivoProduto; avisos: string[] }> {
+export async function atualizarProduto(produto: ProdutoLink, copias: number, copiasComparador: number) {
   const antes = lerJson<ArquivoProduto>(arquivoDe(produto));
-  const avisos: string[] = [];
-  const agora = new Date().toISOString();
-
-  const arquivo = await buscarHistoricoArquivado(produto, {
-    jaLidas: new Set(antes?.copiasLidas ?? []),
-    maximoDeCopias,
-  });
-  if (arquivo.bloqueado) avisos.push('O Internet Archive pediu uma pausa; o resto das cópias antigas fica para a próxima rodada.');
-  if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !antes) {
-    avisos.push('O Internet Archive não tem cópias desta página; o histórico vai crescer com a conferência diária.');
-  }
-
-  const hoje = await lerPrecoAtual(produto);
-  if (!hoje.ponto) avisos.push('A loja não mostrou o preço de hoje para o robô (às vezes ela pede captcha).');
-
-  const pontos = juntarPontos(antes?.pontos ?? [], arquivo.pontos, hoje.ponto ? [hoje.ponto] : []);
-  const dados: ArquivoProduto = {
-    produto,
-    titulo: hoje.titulo ?? antes?.titulo ?? arquivo.titulo ?? null,
-    criadoEm: antes?.criadoEm ?? agora,
-    atualizadoEm: agora,
-    copiasLidas: [...new Set([...(antes?.copiasLidas ?? []), ...arquivo.lidas])].sort(),
-    copiasRestantes: arquivo.faltam,
-    pontos,
-    resumo: resumir(pontos),
-  };
-  gravarJson(arquivoDe(produto), dados);
-  return { dados, avisos };
+  const resultado = await montarHistorico(produto, antes, { copias, copiasComparador });
+  gravarJson(arquivoDe(produto), resultado.dados);
+  return resultado;
 }
 
 function refazerIndice(): ItemIndice[] {
@@ -114,6 +65,7 @@ function refazerIndice(): ItemIndice[] {
         titulo: dados.titulo,
         atualizadoEm: dados.atualizadoEm,
         quantidade: dados.pontos.length,
+        lojas: new Set(dados.pontos.map((p) => p.loja ?? '')).size,
         ultimoPrecoCentavos: dados.resumo.atual?.precoCentavos ?? null,
         menorPrecoCentavos: dados.resumo.menor?.precoCentavos ?? null,
       });
@@ -122,53 +74,6 @@ function refazerIndice(): ItemIndice[] {
   itens.sort((a, b) => (a.titulo ?? a.id).localeCompare(b.titulo ?? b.id, 'pt-BR'));
   gravarJson(INDICE, { atualizadoEm: new Date().toISOString(), produtos: itens });
   return itens;
-}
-
-function primeiroLink(texto: string): string | null {
-  return texto.match(/https?:\/\/[^\s<>()"'`]+/)?.[0]?.replace(/[.,;!?)]+$/, '') ?? null;
-}
-
-async function atenderPedido(arquivoPedido: string, arquivoResposta: string): Promise<void> {
-  const texto = fs.readFileSync(arquivoPedido, 'utf-8');
-  const link = primeiroLink(texto);
-  const responder = (md: string) => fs.writeFileSync(arquivoResposta, md, 'utf-8');
-
-  if (!link) {
-    responder('Não achei nenhum link no pedido. Abra um novo pedido com o link do produto (Amazon ou Mercado Livre).');
-    return;
-  }
-  const produto = await resolverLink(link);
-  if (!produto) {
-    responder(`Não reconheci \`${link.slice(0, 200)}\` como produto da Amazon (amazon.com.br) ou do Mercado Livre.`);
-    return;
-  }
-  const jaExiste = fs.existsSync(arquivoDe(produto));
-  const total = fs.existsSync(PASTA_PRODUTOS) ? fs.readdirSync(PASTA_PRODUTOS).length : 0;
-  if (!jaExiste && total >= LIMITE_DE_PRODUTOS) {
-    responder(`A lista chegou ao limite de ${LIMITE_DE_PRODUTOS} produtos; não foi possível incluir este agora.`);
-    return;
-  }
-
-  const { dados, avisos } = await atualizarProduto(produto, 30);
-  refazerIndice();
-  const r = dados.resumo;
-  const endereco = `${ENDERECO_PAGINA}?produto=${produto.loja}_${produto.id}`;
-  responder(
-    [
-      `**${dados.titulo ?? produto.id}**`,
-      '',
-      r.quantidade
-        ? `${r.quantidade} preços registrados desde ${r.primeiraData?.slice(0, 10)}. Menor: ${reais(r.menor?.precoCentavos)}, maior: ${reais(r.maior?.precoCentavos)}, último: ${reais(r.atual?.precoCentavos)}.`
-        : 'Ainda não encontrei preços para este produto.',
-      '',
-      r.veredito,
-      ...avisos.map((a) => `- ${a}`),
-      '',
-      `Gráfico: ${endereco} (a página leva cerca de 1 minuto para mostrar os dados novos).`,
-      '',
-      'O robô confere este produto todos os dias, então o histórico continua crescendo.',
-    ].join('\n'),
-  );
 }
 
 async function conferirTodos(minutos: number): Promise<void> {
@@ -180,8 +85,8 @@ async function conferirTodos(minutos: number): Promise<void> {
       break;
     }
     const produto: ProdutoLink = { loja: item.loja as ProdutoLink['loja'], id: item.id, url: item.url };
-    const { dados, avisos } = await atualizarProduto(produto, 5);
-    console.log(`${item.id}: ${dados.pontos.length} preços. ${avisos.join(' ')}`);
+    const { dados, avisos } = await atualizarProduto(produto, 5, 3);
+    console.log(`${produto.id}: ${dados.pontos.length} preços. ${avisos.join(' ')}`);
   }
   refazerIndice();
 }
@@ -195,12 +100,9 @@ async function principal(): Promise<void> {
 
   if (args.includes('--todos')) return conferirTodos(Number(valor('--minutos') ?? 20));
 
-  const pedido = valor('--pedido');
-  if (pedido) return atenderPedido(pedido, valor('--resposta') ?? 'resposta.md');
-
   const links = args.filter((a) => /^https?:\/\//.test(a));
   if (links.length === 0) {
-    console.log('Uso: atualizar.ts <link>... | --pedido arquivo --resposta arquivo | --todos [--minutos N]');
+    console.log('Uso: atualizar.ts <link>... | --todos [--minutos N]');
     process.exitCode = 2;
     return;
   }
@@ -210,8 +112,9 @@ async function principal(): Promise<void> {
       console.log(`Link não reconhecido: ${link}`);
       continue;
     }
-    const { dados, avisos } = await atualizarProduto(produto, Number(valor('--copias') ?? 30));
-    console.log(`${produto.id} (${dados.titulo ?? '?'}): ${dados.pontos.length} preços. ${dados.resumo.veredito} ${avisos.join(' ')}`);
+    const { dados, avisos } = await atualizarProduto(produto, Number(valor('--copias') ?? 25), Number(valor('--copias-lojas') ?? 8));
+    const lojas = new Set(dados.pontos.map((p) => p.loja ?? '(link)'));
+    console.log(`${produto.id} (${dados.titulo ?? '?'}): ${dados.pontos.length} preços em ${lojas.size} lojas. ${dados.resumo.veredito} ${avisos.join(' ')}`);
   }
   refazerIndice();
 }

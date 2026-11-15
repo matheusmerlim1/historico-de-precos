@@ -5,12 +5,15 @@
   --hp-fundo-cartao: #f5f7f5;
   --hp-borda: #c9cfc9;
   --hp-grade: #dde2dd;
-  --hp-linha: #1f6f3a;
-  --hp-arquivo: #1f5fae;
-  --hp-loja: #1f6f3a;
-  --hp-telegram: #a3420b;
   --hp-aviso-fundo: #fff6e0;
   --hp-aviso-borda: #c99a2e;
+  --hp-s1: #2a78d6;
+  --hp-s2: #eb6834;
+  --hp-s3: #1baf7a;
+  --hp-s4: #eda100;
+  --hp-s5: #e87ba4;
+  --hp-s6: #008300;
+  --hp-superficie: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,12 +23,15 @@
     --hp-fundo-cartao: #1e2420;
     --hp-borda: #48524a;
     --hp-grade: #333a35;
-    --hp-linha: #6fcf8f;
-    --hp-arquivo: #7fb2ff;
-    --hp-loja: #6fcf8f;
-    --hp-telegram: #ffa66b;
     --hp-aviso-fundo: #3a2f12;
     --hp-aviso-borda: #c99a2e;
+    --hp-s1: #3987e5;
+    --hp-s2: #d95926;
+    --hp-s3: #199e70;
+    --hp-s4: #c98500;
+    --hp-s5: #d55181;
+    --hp-s6: #0ca30c;
+    --hp-superficie: #181d1a;
   }
 }
 
@@ -35,12 +41,15 @@
   --hp-fundo-cartao: #1e2420;
   --hp-borda: #48524a;
   --hp-grade: #333a35;
-  --hp-linha: #6fcf8f;
-  --hp-arquivo: #7fb2ff;
-  --hp-loja: #6fcf8f;
-  --hp-telegram: #ffa66b;
   --hp-aviso-fundo: #3a2f12;
   --hp-aviso-borda: #c99a2e;
+  --hp-s1: #3987e5;
+  --hp-s2: #d95926;
+  --hp-s3: #199e70;
+  --hp-s4: #c98500;
+  --hp-s5: #d55181;
+  --hp-s6: #0ca30c;
+  --hp-superficie: #181d1a;
 }
 
 .hp-resultado {
@@ -132,33 +141,28 @@
 
 .hp-linha {
   fill: none;
-  stroke: var(--hp-linha);
+  stroke: var(--hp-cor);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
 .hp-ponto {
-  stroke: var(--hp-fundo-cartao);
-  stroke-width: 1.5;
+  fill: var(--hp-cor);
+  stroke: var(--hp-superficie);
+  stroke-width: 2;
 }
 
-.hp-ponto.hp-arquivo,
-.hp-marca.hp-arquivo {
-  fill: var(--hp-arquivo);
-  background: var(--hp-arquivo);
+.hp-rotulo {
+  fill: var(--hp-texto);
+  font-size: 13px;
 }
 
-.hp-ponto.hp-loja,
-.hp-marca.hp-loja {
-  fill: var(--hp-loja);
-  background: var(--hp-loja);
-}
-
-.hp-ponto.hp-telegram,
-.hp-marca.hp-telegram {
-  fill: var(--hp-telegram);
-  background: var(--hp-telegram);
-}
+.hp-s1 { --hp-cor: var(--hp-s1); }
+.hp-s2 { --hp-cor: var(--hp-s2); }
+.hp-s3 { --hp-cor: var(--hp-s3); }
+.hp-s4 { --hp-cor: var(--hp-s4); }
+.hp-s5 { --hp-cor: var(--hp-s5); }
+.hp-s6 { --hp-cor: var(--hp-s6); }
 
 .hp-legenda {
   list-style: none;
@@ -178,6 +182,7 @@
 
 .hp-marca {
   flex: none;
+  background: var(--hp-cor);
   display: inline-block;
   width: 0.75rem;
   height: 0.75rem;
@@ -222,4 +227,30 @@
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+.hp-lojas {
+  margin: 0 0 1rem;
+}
+
+.hp-lojas caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 0.4rem;
+}
+
+.hp-lojas th[scope='row'] {
+  font-weight: 600;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.hp-data {
+  color: var(--hp-suave);
+  font-size: 0.85rem;
+}
+
+.hp-rolagem:focus-visible {
+  outline: 3px solid var(--hp-s1);
+  outline-offset: 2px;
 }

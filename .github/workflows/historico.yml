@@ -1,15 +1,12 @@
 name: Histórico de preço
 
 on:
-  issues:
-    types: [opened]
   schedule:
     - cron: '17 9 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
-  issues: write
 
 concurrency:
   group: historico
@@ -17,7 +14,6 @@ concurrency:
 
 jobs:
   atualizar:
-    if: github.event_name != 'issues' || startsWith(github.event.issue.title, 'Histórico')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -27,17 +23,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Atender o pedido aberto como issue
-        if: github.event_name == 'issues'
-        env:
-          TITULO: ${{ github.event.issue.title }}
-          CORPO: ${{ github.event.issue.body }}
-        run: |
-          printf '%s\n%s\n' "$TITULO" "$CORPO" > "$RUNNER_TEMP/pedido.txt"
-          node --experimental-strip-types --no-warnings robo/atualizar.ts --pedido "$RUNNER_TEMP/pedido.txt" --resposta "$RUNNER_TEMP/resposta.md"
-
-      - name: Conferir todos os produtos
-        if: github.event_name != 'issues'
+      - name: Conferir todos os produtos da lista
         run: node --experimental-strip-types --no-warnings robo/atualizar.ts --todos --minutos 20
 
       - name: Salvar os dados
@@ -51,15 +37,3 @@ jobs:
             git pull --rebase && git push && break
             sleep 5
           done
-
-      - name: Responder o pedido
-        if: github.event_name == 'issues' && always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NUMERO: ${{ github.event.issue.number }}
-        run: |
-          if [ ! -s "$RUNNER_TEMP/resposta.md" ]; then
-            echo "O robô não conseguiu terminar este pedido. Tente abrir outro mais tarde." > "$RUNNER_TEMP/resposta.md"
-          fi
-          gh issue comment "$NUMERO" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/resposta.md"
-          gh issue close "$NUMERO" --repo "$GITHUB_REPOSITORY"

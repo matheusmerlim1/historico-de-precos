@@ -1,17 +1,16 @@
-// Página pública: lê os históricos que o robô grava em dados/ e pede produtos novos por issue.
+// Página pública: manda o link ao servidor, que monta o histórico na hora (sem pedido nem login).
+// Se o servidor não responder, mostra o histórico que o robô diário já salvou em dados/.
 (function () {
   const { desenhar, reais, dataCurta, esc } = window.HistoricoTela;
-  const REPO = 'https://github.com/matheusmerlim1/historico-de-precos';
+  const SERVIDOR = (window.HISTORICO_SERVIDOR || '').replace(/\/$/, '');
   const form = document.getElementById('form-busca');
   const campo = document.getElementById('link');
+  const botao = form.querySelector('button[type="submit"]');
   const status = document.getElementById('status');
   const resultado = document.getElementById('resultado');
-  const pedido = document.getElementById('pedido');
-  const linkPedido = document.getElementById('link-pedido');
-  const aguardando = document.getElementById('aguardando');
-  let espera = null;
+  let consultaAtual = 0;
 
-  // Mesma regra de src/historico/motor.ts (identificarLink).
+  // Mesma regra de robo/motor.ts (identificarLink), para achar o histórico salvo sem o servidor.
   function identificarLink(texto) {
     let url;
     try {
@@ -31,115 +30,88 @@
     return null;
   }
 
-  function ehLinkCurto(texto) {
-    try {
-      const host = new URL(texto.trim()).hostname.toLowerCase().replace(/^www\./, '');
-      return /^(amzn\.to|a\.co|mercadolivre\.com|meli\.la|bit\.ly|tinyurl\.com)$/.test(host);
-    } catch {
-      return false;
-    }
-  }
-
-  async function lerDados(chave) {
+  async function lerSalvo(chave) {
     const resp = await fetch(`dados/produtos/${encodeURIComponent(chave)}.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (resp.status === 404) return null;
-    if (!resp.ok) throw new Error(`erro ${resp.status} ao ler os dados`);
+    if (!resp.ok) return null;
     return resp.json();
   }
 
-  function pararEspera() {
-    if (espera) clearInterval(espera);
-    espera = null;
-    aguardando.hidden = true;
-  }
-
-  function enderecoDoPedido(link, chave) {
-    const titulo = `Histórico: ${chave || link}`.slice(0, 120);
-    const corpo = `${link}\n\n(Pedido feito pela página. O robô responde aqui com o resumo e fecha o pedido.)`;
-    return `${REPO}/issues/new?title=${encodeURIComponent(titulo)}&body=${encodeURIComponent(corpo)}`;
-  }
-
-  function mostrarPedido(link, chave) {
-    pedido.hidden = false;
-    linkPedido.href = enderecoDoPedido(link, chave);
-    linkPedido.onclick = () => {
-      if (!chave) {
-        status.textContent = 'Depois que o robô terminar, a resposta no GitHub traz o link do gráfico.';
-        return;
-      }
-      pararEspera();
-      aguardando.hidden = false;
-      const inicio = Date.now();
-      espera = setInterval(async () => {
-        if (Date.now() - inicio > 15 * 60 * 1000) {
-          pararEspera();
-          status.textContent = 'O robô está demorando. Veja a resposta no pedido aberto no GitHub.';
-          return;
-        }
-        try {
-          const dados = await lerDados(chave);
-          if (dados) {
-            pararEspera();
-            pedido.hidden = true;
-            status.textContent = '';
-            desenhar(resultado, dados);
-            carregarLista();
-          }
-        } catch {
-          // tenta de novo na próxima volta
-        }
-      }, 30000);
-    };
-  }
-
-  async function consultar(link, chaveDireta) {
-    pararEspera();
-    pedido.hidden = true;
-    resultado.innerHTML = '';
-    status.textContent = '';
-
-    let chave = chaveDireta;
-    if (!chave) {
-      if (!link) {
-        status.textContent = 'Cole o link do produto.';
-        campo.focus();
-        return;
-      }
-      const produto = identificarLink(link);
-      if (!produto) {
-        if (ehLinkCurto(link)) {
-          status.textContent =
-            'Este é um link encurtado. Abra-o, copie o endereço completo da página do produto e cole aqui — ou peça ao robô, que abre o link sozinho.';
-          mostrarPedido(link, null);
-        } else {
-          status.textContent = 'Não reconheci o link. Use o link de um produto da amazon.com.br ou do mercadolivre.com.br.';
-        }
-        campo.focus();
-        return;
-      }
-      chave = `${produto.loja}_${produto.id}`;
+  /** Lê a resposta do servidor linha a linha, mostrando cada etapa, e devolve o resultado. */
+  async function perguntarAoServidor(link, minhaConsulta) {
+    const resp = await fetch(`${SERVIDOR}/api/historico?link=${encodeURIComponent(link)}`);
+    if (!resp.ok || !resp.body) {
+      const corpo = await resp.json().catch(() => ({}));
+      throw new Error(corpo.erro || `o servidor respondeu ${resp.status}`);
     }
+    const leitor = resp.body.getReader();
+    const decodificador = new TextDecoder();
+    let resto = '';
+    for (;;) {
+      const { value, done } = await leitor.read();
+      if (done) break;
+      resto += decodificador.decode(value, { stream: true });
+      const linhas = resto.split('\n');
+      resto = linhas.pop();
+      for (const linha of linhas) {
+        if (!linha.trim()) continue;
+        const msg = JSON.parse(linha);
+        if (msg.erro) throw new Error(msg.erro);
+        if (msg.resultado) return msg.resultado;
+        if (msg.etapa && minhaConsulta === consultaAtual) status.textContent = msg.etapa;
+      }
+    }
+    throw new Error('a resposta do servidor veio incompleta');
+  }
 
-    status.textContent = 'Carregando…';
+  async function consultar(link, chaveSalva) {
+    const minhaConsulta = ++consultaAtual;
+    resultado.innerHTML = '';
+    if (!link && !chaveSalva) {
+      status.textContent = 'Cole o link do produto.';
+      campo.focus();
+      return;
+    }
+    botao.disabled = true;
+    status.textContent = 'Consultando…';
+    const produto = link ? identificarLink(link) : null;
+    const chave = chaveSalva || (produto ? `${produto.loja}_${produto.id}` : null);
+
     try {
-      const dados = await lerDados(chave);
+      let dados = null;
+      let aviso = '';
+      if (SERVIDOR && link) {
+        try {
+          dados = await perguntarAoServidor(link, minhaConsulta);
+        } catch (erro) {
+          if (/Não reconheci/.test(erro.message)) throw erro;
+          aviso = `O servidor não respondeu agora (${erro.message}).`;
+        }
+      }
+      if (!dados && chave) {
+        dados = await lerSalvo(chave);
+        if (dados && aviso) dados.avisos = [`${aviso} Mostrando o histórico salvo até ${dataCurta(dados.atualizadoEm)}.`];
+      }
+      if (minhaConsulta !== consultaAtual) return;
       if (!dados) {
-        status.textContent = '';
-        mostrarPedido(link || chave, chave);
+        status.textContent = aviso
+          ? `${aviso} Tente de novo em alguns minutos.`
+          : 'Não reconheci o link. Use o link de um produto da amazon.com.br ou do mercadolivre.com.br.';
         return;
       }
       status.textContent = '';
       desenhar(resultado, dados);
-      const novaUrl = `${location.pathname}?produto=${encodeURIComponent(chave)}`;
-      history.replaceState(null, '', novaUrl);
-    } catch (err) {
-      status.textContent = `Não foi possível carregar: ${err.message}`;
+      const chaveFinal = dados.chave || chave || `${dados.produto.loja}_${dados.produto.id}`;
+      history.replaceState(null, '', `${location.pathname}?produto=${encodeURIComponent(chaveFinal)}`);
+    } catch (erro) {
+      if (minhaConsulta === consultaAtual) status.textContent = erro.message;
+    } finally {
+      if (minhaConsulta === consultaAtual) botao.disabled = false;
     }
   }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    consultar(campo.value.trim());
+    consultar(campo.value.trim(), null);
   });
 
   async function carregarLista() {
@@ -148,22 +120,24 @@
       const resp = await fetch(`dados/indice.json?t=${Date.now()}`, { cache: 'no-store' });
       const { produtos } = await resp.json();
       if (!produtos.length) {
-        lista.textContent = 'Nenhum produto ainda. Consulte um link acima para pedir o primeiro.';
+        lista.textContent = 'Nenhum produto ainda.';
         return;
       }
       lista.innerHTML = `<ul class="lista">${produtos
         .map((p) => {
           const chave = `${p.loja}_${p.id}`;
-          return `<li><a href="?produto=${esc(encodeURIComponent(chave))}" data-chave="${esc(chave)}">
+          const lojas = p.lojas > 1 ? ` · ${p.lojas} lojas` : '';
+          return `<li><a href="?produto=${esc(encodeURIComponent(chave))}" data-chave="${esc(chave)}" data-url="${esc(p.url)}">
             <span class="nome">${esc(p.titulo || p.id)}</span>
-            <span class="detalhe">${p.quantidade} preços · último ${esc(reais(p.ultimoPrecoCentavos))} · menor ${esc(reais(p.menorPrecoCentavos))} · conferido em ${esc(dataCurta(p.atualizadoEm))}</span>
+            <span class="detalhe">${p.quantidade} preços${lojas} · último ${esc(reais(p.ultimoPrecoCentavos))} · menor ${esc(reais(p.menorPrecoCentavos))} · conferido em ${esc(dataCurta(p.atualizadoEm))}</span>
           </a></li>`;
         })
         .join('')}</ul>`;
       lista.querySelectorAll('a[data-chave]').forEach((a) =>
         a.addEventListener('click', (e) => {
           e.preventDefault();
-          consultar('', a.dataset.chave);
+          campo.value = a.dataset.url;
+          consultar(a.dataset.url, a.dataset.chave);
           document.getElementById('titulo-busca').scrollIntoView({ behavior: 'smooth' });
         }),
       );
@@ -173,6 +147,15 @@
   }
 
   carregarLista();
-  const inicial = new URLSearchParams(location.search).get('produto');
-  if (inicial && /^(amazon|mercadolivre)_[A-Z0-9]+$/.test(inicial)) consultar('', inicial);
+  const parametros = new URLSearchParams(location.search);
+  const linkInicial = parametros.get('link');
+  const inicial = parametros.get('produto');
+  if (linkInicial) {
+    // ?link=... consulta na hora (dá para compartilhar o endereço de uma consulta).
+    campo.value = linkInicial;
+    consultar(linkInicial, null);
+  } else if (inicial && /^(amazon|mercadolivre)_[A-Z0-9]+$/.test(inicial)) {
+    // Abre direto o histórico salvo (rápido); quem quiser o mais novo consulta o link.
+    lerSalvo(inicial).then((dados) => dados && desenhar(resultado, dados));
+  }
 })();

@@ -3,37 +3,54 @@
 Página pública: **https://matheusmerlim1.github.io/historico-de-precos/**
 
 Cole o link de um produto da Amazon (amazon.com.br) ou do Mercado Livre e veja como o preço mudou
-ao longo do tempo: menor, maior, média, último preço e um gráfico.
+ao longo do tempo, nessa loja e nas outras que vendem o mesmo produto (KaBuM!, Magazine Luiza,
+Casas Bahia...): último preço, menor, maior, média, onde está mais barato hoje e o gráfico com uma
+linha por loja. Sem login e sem pedido: a consulta é feita na hora.
+
+Dá para compartilhar uma consulta: `https://matheusmerlim1.github.io/historico-de-precos/?link=<link do produto>`.
 
 ## Como funciona
 
-A página é estática (GitHub Pages) e não precisa de chave nem de login. Os preços ficam em `dados/`:
+| Parte | Onde roda | O que faz |
+|---|---|---|
+| Página (`index.html`, `pagina.js`, `historico-tela.*`) | GitHub Pages | manda o link ao servidor e desenha o resultado |
+| Servidor (`servidor/api.ts` → `api/historico.mjs`) | Vercel (grátis) | monta o histórico na hora e devolve o andamento e o resultado |
+| Robô (`robo/atualizar.ts`) | GitHub Actions, todo dia às 9h17 UTC | soma o preço do dia aos produtos da lista em `dados/` |
 
-- `dados/indice.json`: lista dos produtos acompanhados;
-- `dados/produtos/<loja>_<código>.json`: o histórico de cada produto.
+O navegador não consegue ler o Internet Archive nem as lojas direto (eles não liberam acesso a partir
+de outros sites), por isso existe o servidor. Fontes de preço (`robo/motor.ts`):
 
-Quem grava esses arquivos é o robô (`robo/atualizar.ts`), rodando no GitHub Actions
-(`.github/workflows/historico.yml`):
+- cópias antigas da página do produto guardadas no Internet Archive;
+- o preço de hoje na loja do link;
+- outras lojas: a página do mesmo produto (mesmo modelo e capacidade) no comparador Buscapé, hoje e
+  nas cópias antigas dela.
 
-1. **Pedido**: quando a página não conhece o produto, ela abre uma issue com o link. O robô lê as
-   cópias antigas da página do produto no Internet Archive, lê o preço de hoje na loja, grava os
-   dados, responde na issue e a fecha.
-2. **Conferência diária** (9h17 UTC): o robô passa pelos produtos e acrescenta o preço do dia e mais
-   algumas cópias antigas.
+Se o servidor não responder, a página mostra o histórico que o robô já salvou em `dados/`.
 
-O navegador não consegue ler o Internet Archive direto (ele não libera acesso de outros sites), por
-isso o trabalho fica com o robô.
+## Publicar o servidor (uma vez)
 
-## Rodar o robô no PC
+1. Entrar em https://vercel.com com a conta do GitHub.
+2. **Add New → Project**, escolher o repositório `historico-de-precos` e clicar em **Deploy** (sem
+   mudar nada: não há etapa de build; o `vercel.json` já dá 60 s para a função).
+3. Se o endereço do projeto não for `https://historico-de-precos.vercel.app`, trocar em `config.js`.
 
-Node 22 ou mais novo, sem instalar nada:
+Depois disso a Vercel publica sozinha a cada push.
+
+## Mexer no código
+
+O servidor é um arquivo só, gerado a partir do TypeScript (rodar depois de mudar `servidor/` ou `robo/`):
+
+```
+npx esbuild@0.24.0 servidor/api.ts --bundle --platform=node --format=esm --target=node20 --outfile=api/historico.mjs --legal-comments=none
+node ferramentas/servidor-local.mjs      # testa em http://127.0.0.1:8787/api/historico?link=...
+```
+
+Robô no PC (Node 22 ou mais novo, sem instalar nada):
 
 ```
 node --experimental-strip-types robo/atualizar.ts https://www.amazon.com.br/dp/B0CQD9VK7X
 node --experimental-strip-types robo/atualizar.ts --todos
 ```
-
-## Origem
 
 `robo/motor.ts`, `historico-tela.js` e `historico-tela.css` são cópias dos arquivos do app
 **Comparador de Promoções do Telegram** (repositório privado), cuja aba "Histórico de preço" é a
