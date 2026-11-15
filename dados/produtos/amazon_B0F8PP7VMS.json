@@ -6,13 +6,113 @@
  },
  "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
  "criadoEm": "2026-11-14T20:11:47.764Z",
- "atualizadoEm": "2026-11-14T20:11:47.764Z",
+ "atualizadoEm": "2026-11-15T02:41:52.317Z",
  "copiasLidas": [
+  "20250630123842",
+  "20250831112637",
+  "20250909174437",
   "20251112050204",
-  "20251118123944"
+  "20251118123944",
+  "20260414125645",
+  "20261009152959"
  ],
  "copiasRestantes": 0,
+ "comparador": {
+  "nome": "Celular Samsung Galaxy S25 Edge 5G 512GB 12 GB",
+  "url": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
+ },
+ "copiasComparadorLidas": [
+  "20250809134736",
+  "20250913072626",
+  "20251216092038"
+ ],
  "pontos": [
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 569900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Fast Shop"
+  },
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 799990,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25"
+  },
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 647910,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 647910,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "MASTERCELL"
+  },
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 683905,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Casas Bahia"
+  },
+  {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 683905,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Ponto"
+  },
+  {
+   "data": "2025-09-13T07:26:26Z",
+   "precoCentavos": 440527,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250913072626/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Fast Shop"
+  },
+  {
+   "data": "2025-09-13T07:26:26Z",
+   "precoCentavos": 499389,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250913072626/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Casas Bahia"
+  },
+  {
+   "data": "2025-09-13T07:26:26Z",
+   "precoCentavos": 557820,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250913072626/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2025-09-13T07:26:26Z",
+   "precoCentavos": 557820,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250913072626/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25",
+   "loja": "MASTERCELL"
+  },
+  {
+   "data": "2025-09-13T07:26:26Z",
+   "precoCentavos": 499389,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250913072626/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25"
+  },
   {
    "data": "2025-11-12T05:02:04Z",
    "precoCentavos": 543789,
@@ -21,38 +121,106 @@
    "link": "https://web.archive.org/web/20251112050204/https://www.amazon.com.br/gp/product/B0F8PP7VMS?smid=A122ZHUG7SODV0&th=1&linkCode=sl1&tag=peguepromocoe-20&linkId=bae207a52960934a74ff792d36032557&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
+   "data": "2025-12-16T09:20:38Z",
+   "precoCentavos": 499900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251216092038/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=samsung%2Bs25%2Bedge%2B256gb",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2025-12-16T09:20:38Z",
+   "precoCentavos": 516039,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251216092038/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=samsung%2Bs25%2Bedge%2B256gb",
+   "loja": "Casas Bahia"
+  },
+  {
+   "data": "2025-12-16T09:20:38Z",
+   "precoCentavos": 555444,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251216092038/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=samsung%2Bs25%2Bedge%2B256gb"
+  },
+  {
+   "data": "2025-12-16T09:20:38Z",
+   "precoCentavos": 516039,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251216092038/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=samsung%2Bs25%2Bedge%2B256gb",
+   "loja": "Ponto"
+  },
+  {
+   "data": "2026-04-14T12:56:45Z",
+   "precoCentavos": 576400,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260414125645/https://www.amazon.com.br/dp/B0F8PP7VMS?linkCode=ogi&th=1&psc=1&tag=tudocel-20"
+  },
+  {
+   "data": "2026-10-09T15:29:59Z",
+   "precoCentavos": 386555,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20261009152959/https://www.amazon.com.br/dp/B0F8PP7VMS/ref=cm_sw_r_as_gl_apa_gl_i_5CCXKH38NTJ8JZ9JW5YY?linkCode=ml1&tag=daayindica09-20&linkId=19b8c609f8bec5ede4bc9beba939f8ce&ascsubtag=srctok-2b9ecc8004c24b5d&btn_type=ss&btn_ref=srctok-2b9ecc8004c24b5d"
+  },
+  {
    "data": "2026-11-14T20:12:50.681Z",
    "precoCentavos": 394155,
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+  },
+  {
+   "data": "2026-11-15T02:42:47.784Z",
+   "precoCentavos": 397005,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-15T02:42:47.784Z",
+   "precoCentavos": 406710,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-15T02:42:47.784Z",
+   "precoCentavos": 414900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
   }
  ],
  "resumo": {
-  "quantidade": 2,
+  "quantidade": 8,
   "menor": {
-   "data": "2026-11-14T20:12:50.681Z",
-   "precoCentavos": 394155,
-   "precoDeCentavos": null,
-   "fonte": "loja",
-   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
-  },
-  "maior": {
-   "data": "2025-11-12T05:02:04Z",
-   "precoCentavos": 543789,
+   "data": "2026-10-09T15:29:59Z",
+   "precoCentavos": 386555,
    "precoDeCentavos": null,
    "fonte": "arquivo",
-   "link": "https://web.archive.org/web/20251112050204/https://www.amazon.com.br/gp/product/B0F8PP7VMS?smid=A122ZHUG7SODV0&th=1&linkCode=sl1&tag=peguepromocoe-20&linkId=bae207a52960934a74ff792d36032557&language=pt_BR&ref_=as_li_ss_tl"
+   "link": "https://web.archive.org/web/20261009152959/https://www.amazon.com.br/dp/B0F8PP7VMS/ref=cm_sw_r_as_gl_apa_gl_i_5CCXKH38NTJ8JZ9JW5YY?linkCode=ml1&tag=daayindica09-20&linkId=19b8c609f8bec5ede4bc9beba939f8ce&ascsubtag=srctok-2b9ecc8004c24b5d&btn_type=ss&btn_ref=srctok-2b9ecc8004c24b5d"
   },
-  "mediaCentavos": 468972,
+  "maior": {
+   "data": "2025-08-09T13:47:36Z",
+   "precoCentavos": 799990,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25"
+  },
+  "mediaCentavos": 521328,
   "atual": {
-   "data": "2026-11-14T20:12:50.681Z",
-   "precoCentavos": 394155,
+   "data": "2026-11-15T02:42:47.784Z",
+   "precoCentavos": 414900,
    "precoDeCentavos": null,
    "fonte": "loja",
-   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
   },
-  "primeiraData": "2025-11-12T05:02:04Z",
-  "veredito": "Poucos registros ainda: dá para ver o preço, mas não para dizer se está bom."
+  "primeiraData": "2025-08-09T13:47:36Z",
+  "veredito": "O último preço está 20% abaixo da média e 7% acima do menor já visto (R$ 3.865,55)."
  }
 }

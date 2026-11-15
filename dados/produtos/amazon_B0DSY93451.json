@@ -6,7 +6,7 @@
  },
  "titulo": "Celular Samsung Galaxy S25 Ultra 5G, 256GB, 12GB RAM, Câmera Quádrupla de 200+50+10+50, Tela Grande de 6.9\", Titânio Azul",
  "criadoEm": "2026-11-14T16:42:03.695Z",
- "atualizadoEm": "2026-11-14T16:48:37.562Z",
+ "atualizadoEm": "2026-11-15T02:40:50.495Z",
  "copiasLidas": [
   "20250218214447",
   "20250716171527",
@@ -34,7 +34,9 @@
   "20260406131351",
   "20260408192647",
   "20260415040653",
+  "20260415065130",
   "20260417110326",
+  "20260420010623",
   "20260420012948",
   "20260424132721",
   "20260508174830",
@@ -45,6 +47,11 @@
   "20261015140001"
  ],
  "copiasRestantes": 0,
+ "comparador": {
+  "nome": "Celular Samsung Galaxy S25 Ultra 5G 256GB 12 GB",
+  "url": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
+ },
+ "copiasComparadorLidas": [],
  "pontos": [
   {
    "data": "2025-02-18T21:44:47Z",
@@ -248,6 +255,22 @@
    "precoDeCentavos": 599889,
    "fonte": "loja",
    "link": "https://www.amazon.com.br/dp/B0DSY93451"
+  },
+  {
+   "data": "2026-11-15T02:41:47.293Z",
+   "precoCentavos": 479880,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-15T02:41:47.293Z",
+   "precoCentavos": 520707,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
+   "loja": "Magazine Luiza"
   }
  ],
  "resumo": {
