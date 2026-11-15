@@ -32,7 +32,7 @@ Se o servidor não responder, a página mostra o histórico que o robô já salv
 1. Entrar em https://vercel.com com a conta do GitHub.
 2. **Add New → Project**, escolher o repositório `historico-de-precos` e clicar em **Deploy** (sem
    mudar nada: não há etapa de build; o `vercel.json` já dá 60 s para a função).
-3. Se o endereço do projeto não for `https://historico-de-precos.vercel.app`, trocar em `config.js`.
+3. O endereço de produção (em Domains, na Vercel) vai em `config.js`; hoje é `https://historico-de-precos-jade.vercel.app`.
 
 Depois disso a Vercel publica sozinha a cada push.
 

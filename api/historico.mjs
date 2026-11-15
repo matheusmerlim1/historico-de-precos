@@ -151,6 +151,7 @@ function timestampParaIso(ts) {
   return `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}T${ts.slice(8, 10) || "00"}:${ts.slice(10, 12) || "00"}:${ts.slice(12, 14) || "00"}Z`;
 }
 function espalharNoTempo(itens, maximo) {
+  if (maximo <= 0) return [];
   if (itens.length <= maximo) return itens;
   if (maximo <= 1) return itens.slice(-1);
   const escolhidos = [];
@@ -236,6 +237,7 @@ async function buscarHistoricoArquivado(produto, opcoes = {}) {
   let tituloDe = "";
   let bloqueado = false;
   for (const copia of escolhidas) {
+    if (opcoes.parar?.()) break;
     if (lidas.length > 0) await esperar(pausa);
     try {
       const resultado = await lerCopiaArquivada(produto, copia, buscar);
@@ -387,12 +389,14 @@ function semelhancaDeProduto(tituloA, tituloB) {
   const aMaisCurto = tituloA.length <= tituloB.length;
   const curto = aMaisCurto ? a : b;
   const outro = aMaisCurto ? b : a;
-  for (const p of curto) {
+  const tituloCurto = aMaisCurto ? tituloA : tituloB;
+  const nomeCurto = tituloCurto.split(/,| - | \| /)[0] ?? tituloCurto;
+  for (const p of palavrasDoTitulo(nomeCurto, 6)) {
     const ehModelo = /[a-z]/.test(p) && /\d/.test(p) && !UNIDADE.test(p);
     const ehNumero = /^\d{1,3}$/.test(p);
     if ((ehModelo || ehNumero) && !outro.has(p)) return 0;
   }
-  const curtas = palavrasDoTitulo(aMaisCurto ? tituloA : tituloB, 8);
+  const curtas = palavrasDoTitulo(tituloCurto, 10).filter((p) => !/^\d+(mp|mah|hz|w|g|k|pol)$/.test(p) && !/^ip\d+$/.test(p)).slice(0, 8);
   if (curtas.length === 0) return 0;
   return curtas.filter((p) => outro.has(p)).length / curtas.length;
 }
@@ -435,6 +439,20 @@ function nomeDaLoja(nome) {
   const limpo = nome.trim().replace(/\s+/g, " ");
   return APELIDOS[limpo.toLowerCase()] ?? limpo;
 }
+function ofertasNaBuscaDoBuscape(html, titulo) {
+  const dados = dadosNext(html);
+  const resultados = dados?.props?.initialReduxState?.hits?.hits ?? [];
+  const porLoja = /* @__PURE__ */ new Map();
+  for (const r of resultados) {
+    if (r.type !== "offer" || !r.name || !r.merchantName || typeof r.price !== "number" || !(r.price > 0)) continue;
+    if (semelhancaDeProduto(titulo, r.name) < 0.75) continue;
+    const vendedor = nomeDaLoja(r.merchantName);
+    const centavos = Math.round(r.price * 100);
+    const atual = porLoja.get(vendedor);
+    if (atual == null || centavos < atual) porLoja.set(vendedor, centavos);
+  }
+  return [...porLoja].map(([vendedor, precoCentavos]) => ({ vendedor, precoCentavos }));
+}
 function lerOfertasDoBuscape(html) {
   const dados = dadosNext(html);
   const ofertas = dados?.props?.initialReduxState?.offers;
@@ -467,16 +485,24 @@ function pontosDasOfertas(produto, ofertas, data, fonte, link) {
 async function buscarOutrasLojas(produto, titulo, opcoes = {}) {
   const buscar = opcoes.buscar ?? fetch;
   let pagina = opcoes.pagina ?? null;
+  let ofertasSoltas = [];
+  const enderecoDaBusca = `https://www.buscape.com.br/search?q=${encodeURIComponent(consultaDeBusca(titulo))}`;
   if (!pagina) {
-    const consulta = consultaDeBusca(titulo);
     try {
-      const resp = await buscar(`https://www.buscape.com.br/search?q=${encodeURIComponent(consulta)}`, { headers: NAVEGADOR });
-      if (resp.ok) pagina = escolherNaBuscaDoBuscape(await resp.text(), titulo);
+      const resp = await buscar(enderecoDaBusca, { headers: NAVEGADOR });
+      if (resp.ok) {
+        const html = await resp.text();
+        pagina = escolherNaBuscaDoBuscape(html, titulo);
+        if (!pagina) ofertasSoltas = ofertasNaBuscaDoBuscape(html, titulo);
+      }
     } catch {
       pagina = null;
     }
   }
-  if (!pagina) return { pagina: null, pontos: [], lidas: [], bloqueado: false };
+  if (!pagina) {
+    const hoje = pontosDasOfertas(produto, ofertasSoltas, (/* @__PURE__ */ new Date()).toISOString(), "loja", enderecoDaBusca);
+    return { pagina: null, pontos: hoje, lidas: [], bloqueado: false };
+  }
   const pontos = [];
   try {
     const resp = await buscar(pagina.url, { headers: NAVEGADOR });
@@ -498,6 +524,7 @@ async function buscarOutrasLojas(produto, titulo, opcoes = {}) {
   const novas = copias.filter((c) => !opcoes.jaLidas?.has(c.timestamp));
   const escolhidas = espalharNoTempo(novas, opcoes.maximoDeCopias ?? 8);
   for (const copia of escolhidas) {
+    if (opcoes.parar?.()) break;
     if (lidas.length > 0) await esperar(opcoes.pausaMs ?? 1500);
     try {
       const resp = await buscar(`https://web.archive.org/web/${copia.timestamp}id_/${copia.original}`, { headers: ARQUIVO });
@@ -520,6 +547,8 @@ async function buscarOutrasLojas(produto, titulo, opcoes = {}) {
 }
 
 // robo/montar.ts
+var FOLGA_FINAL_MS = 6e3;
+var LIMITE_POR_PEDIDO_MS = 15e3;
 function principais(pontos) {
   return pontos.filter((p) => !p.loja);
 }
@@ -528,37 +557,65 @@ async function montarHistorico(produto, antes, opcoes) {
   });
   const avisos = [];
   const agora = (/* @__PURE__ */ new Date()).toISOString();
+  const fim = opcoes.prazoMs != null ? Date.now() + opcoes.prazoMs - FOLGA_FINAL_MS : Infinity;
+  const restante = () => fim - Date.now();
+  const semTempo = () => restante() < 2500;
+  const buscar = (url, init) => {
+    const limite = Math.min(LIMITE_POR_PEDIDO_MS, restante());
+    if (limite < 1e3) return Promise.reject(new Error("sem tempo"));
+    return fetch(url, { ...init, signal: AbortSignal.timeout(limite) });
+  };
+  const pausa = opcoes.pausaMs != null ? { pausaMs: opcoes.pausaMs } : {};
   avisar("Lendo o pre\xE7o de hoje na loja...");
-  const hoje = await lerPrecoAtual(produto);
+  const hoje = await lerPrecoAtual(produto, buscar);
   if (!hoje.ponto) avisos.push("A loja n\xE3o mostrou o pre\xE7o de hoje (\xE0s vezes ela pede captcha).");
+  let titulo = hoje.titulo ?? antes?.titulo ?? null;
+  let comparador = antes?.comparador ?? null;
+  const outras = [];
+  const lidasComparador = [];
+  const procurarOutras = async (copias) => {
+    if (!titulo || opcoes.copiasComparador < 0 || semTempo()) return;
+    const r = await buscarOutrasLojas(produto, titulo, {
+      buscar,
+      pagina: comparador,
+      jaLidas: /* @__PURE__ */ new Set([...antes?.copiasComparadorLidas ?? [], ...lidasComparador]),
+      maximoDeCopias: copias,
+      parar: semTempo,
+      ...pausa,
+      aoAvancar: (lidas, total) => avisar(`Lendo pre\xE7os antigos das outras lojas: ${lidas} de ${total}...`)
+    });
+    if (r.pagina) comparador = r.pagina;
+    outras.push(...r.pontos);
+    lidasComparador.push(...r.lidas);
+  };
+  if (titulo) {
+    avisar("Procurando o mesmo produto em outras lojas...");
+    await procurarOutras(0);
+  }
   avisar("Procurando c\xF3pias antigas da p\xE1gina no Internet Archive...");
   const arquivo = await buscarHistoricoArquivado(produto, {
+    buscar,
     jaLidas: new Set(antes?.copiasLidas ?? []),
     maximoDeCopias: opcoes.copias,
-    ...opcoes.pausaMs != null ? { pausaMs: opcoes.pausaMs } : {},
+    parar: semTempo,
+    ...pausa,
     aoAvancar: (lidas, total) => avisar(`Lendo c\xF3pias antigas da p\xE1gina: ${lidas} de ${total}...`)
   });
   if (arquivo.bloqueado) avisos.push("O Internet Archive pediu uma pausa; o resto das c\xF3pias antigas fica para depois.");
-  if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !antes?.copiasLidas?.length) {
+  if (arquivo.totalDeCopias === 0 && !arquivo.bloqueado && !semTempo() && !antes?.copiasLidas?.length) {
     avisos.push("O Internet Archive n\xE3o tem c\xF3pias desta p\xE1gina; o hist\xF3rico desta loja cresce com a confer\xEAncia di\xE1ria.");
   }
-  const titulo = hoje.titulo ?? antes?.titulo ?? arquivo.titulo ?? null;
-  let comparador = antes?.comparador ?? null;
-  let outras = [];
-  let lidasComparador = [];
-  if (titulo && opcoes.copiasComparador >= 0) {
+  if (!titulo && arquivo.titulo) {
+    titulo = arquivo.titulo;
     avisar("Procurando o mesmo produto em outras lojas...");
-    const r = await buscarOutrasLojas(produto, titulo, {
-      pagina: comparador,
-      jaLidas: new Set(antes?.copiasComparadorLidas ?? []),
-      maximoDeCopias: opcoes.copiasComparador,
-      ...opcoes.pausaMs != null ? { pausaMs: opcoes.pausaMs } : {},
-      aoAvancar: (lidas, total) => avisar(`Lendo pre\xE7os antigos das outras lojas: ${lidas} de ${total}...`)
-    });
-    comparador = r.pagina;
-    outras = r.pontos;
-    lidasComparador = r.lidas;
-    if (!r.pagina) avisos.push("N\xE3o achei este mesmo produto (mesmo modelo e capacidade) em outras lojas.");
+    await procurarOutras(0);
+  }
+  if (opcoes.copiasComparador > 0 && comparador) await procurarOutras(opcoes.copiasComparador);
+  if (titulo && !comparador && !semTempo()) {
+    avisos.push("N\xE3o achei este mesmo produto (mesmo modelo e capacidade) em outras lojas.");
+  }
+  if (semTempo() && opcoes.prazoMs != null) {
+    avisos.push("O Internet Archive estava lento; mostrei o que deu tempo de ler. Consulte de novo mais tarde para ver mais.");
   }
   const pontos = juntarPontos(antes?.pontos ?? [], arquivo.pontos, hoje.ponto ? [hoje.ponto] : [], outras);
   const dados = {
@@ -623,6 +680,7 @@ async function GET(req) {
         copias: antes ? 6 : 15,
         copiasComparador: antes ? 3 : 6,
         pausaMs: 1e3,
+        prazoMs: 58e3,
         aoAvancar: (etapa) => void enviar({ etapa })
       });
       const resultado = { ...dados, avisos, chave };

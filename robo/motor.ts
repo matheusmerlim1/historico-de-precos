@@ -241,6 +241,7 @@ export function timestampParaIso(ts: string): string {
 
 /** Escolhe até `maximo` cópias espalhadas no tempo, sempre com a primeira e a última. */
 export function espalharNoTempo<T>(itens: T[], maximo: number): T[] {
+  if (maximo <= 0) return [];
   if (itens.length <= maximo) return itens;
   if (maximo <= 1) return itens.slice(-1);
   const escolhidos: T[] = [];
@@ -328,6 +329,8 @@ export interface OpcoesHistorico {
   pausaMs?: number;
   jaLidas?: Set<string>;
   aoAvancar?: (lidas: number, total: number) => void;
+  /** Quando devolver true, para de ler cópias (ex.: o tempo da consulta está acabando). */
+  parar?: () => boolean;
 }
 
 export interface HistoricoArquivado {
@@ -370,6 +373,7 @@ export async function buscarHistoricoArquivado(
   let bloqueado = false;
 
   for (const copia of escolhidas) {
+    if (opcoes.parar?.()) break;
     if (lidas.length > 0) await esperar(pausa);
     try {
       const resultado = await lerCopiaArquivada(produto, copia, buscar);
@@ -535,12 +539,17 @@ export function semelhancaDeProduto(tituloA: string, tituloB: string): number {
   const outro = aMaisCurto ? b : a;
   // Códigos de modelo (S24, A55, G7...) e números soltos (iPhone 15) do nome curto têm de
   // aparecer iguais no outro: "S24 Ultra" e "S25 Ultra" diferem só nisso.
-  for (const p of curto) {
+  const tituloCurto = aMaisCurto ? tituloA : tituloB;
+  const nomeCurto = tituloCurto.split(/,| - | \| /)[0] ?? tituloCurto;
+  for (const p of palavrasDoTitulo(nomeCurto, 6)) {
     const ehModelo = /[a-z]/.test(p) && /\d/.test(p) && !UNIDADE.test(p);
     const ehNumero = /^\d{1,3}$/.test(p);
     if ((ehModelo || ehNumero) && !outro.has(p)) return 0;
   }
-  const curtas = palavrasDoTitulo(aMaisCurto ? tituloA : tituloB, 8);
+  // Para a nota, contam marca, modelo e capacidade; câmera, bateria, IP54 etc. não.
+  const curtas = palavrasDoTitulo(tituloCurto, 10)
+    .filter((p) => !/^\d+(mp|mah|hz|w|g|k|pol)$/.test(p) && !/^ip\d+$/.test(p))
+    .slice(0, 8);
   if (curtas.length === 0) return 0;
   return curtas.filter((p) => outro.has(p)).length / curtas.length;
 }
@@ -608,6 +617,27 @@ function nomeDaLoja(nome: string): string {
   return APELIDOS[limpo.toLowerCase()] ?? limpo;
 }
 
+/** Ofertas soltas de lojas na própria busca do Buscapé, só as do mesmo produto (a mais barata de cada loja). */
+export function ofertasNaBuscaDoBuscape(html: string, titulo: string): OfertaDeLoja[] {
+  const dados = dadosNext(html) as { props?: { initialReduxState?: { hits?: { hits?: unknown[] } } } } | null;
+  const resultados = (dados?.props?.initialReduxState?.hits?.hits ?? []) as Array<{
+    name?: string;
+    type?: string;
+    merchantName?: string;
+    price?: number;
+  }>;
+  const porLoja = new Map<string, number>();
+  for (const r of resultados) {
+    if (r.type !== 'offer' || !r.name || !r.merchantName || typeof r.price !== 'number' || !(r.price > 0)) continue;
+    if (semelhancaDeProduto(titulo, r.name) < 0.75) continue;
+    const vendedor = nomeDaLoja(r.merchantName);
+    const centavos = Math.round(r.price * 100);
+    const atual = porLoja.get(vendedor);
+    if (atual == null || centavos < atual) porLoja.set(vendedor, centavos);
+  }
+  return [...porLoja].map(([vendedor, precoCentavos]) => ({ vendedor, precoCentavos }));
+}
+
 /** Ofertas de cada loja numa página de produto do Buscapé (a mais barata de cada loja, preço à vista). */
 export function lerOfertasDoBuscape(html: string): OfertaDeLoja[] {
   const dados = dadosNext(html) as {
@@ -669,16 +699,25 @@ export async function buscarOutrasLojas(
 ): Promise<ResultadoOutrasLojas> {
   const buscar = opcoes.buscar ?? fetch;
   let pagina = opcoes.pagina ?? null;
+  let ofertasSoltas: OfertaDeLoja[] = [];
+  const enderecoDaBusca = `https://www.buscape.com.br/search?q=${encodeURIComponent(consultaDeBusca(titulo))}`;
   if (!pagina) {
-    const consulta = consultaDeBusca(titulo);
     try {
-      const resp = await buscar(`https://www.buscape.com.br/search?q=${encodeURIComponent(consulta)}`, { headers: NAVEGADOR });
-      if (resp.ok) pagina = escolherNaBuscaDoBuscape(await resp.text(), titulo);
+      const resp = await buscar(enderecoDaBusca, { headers: NAVEGADOR });
+      if (resp.ok) {
+        const html = await resp.text();
+        pagina = escolherNaBuscaDoBuscape(html, titulo);
+        if (!pagina) ofertasSoltas = ofertasNaBuscaDoBuscape(html, titulo);
+      }
     } catch {
       pagina = null;
     }
   }
-  if (!pagina) return { pagina: null, pontos: [], lidas: [], bloqueado: false };
+  if (!pagina) {
+    // Sem página do produto: ficam as ofertas de hoje que aparecem na busca (sem histórico antigo).
+    const hoje = pontosDasOfertas(produto, ofertasSoltas, new Date().toISOString(), 'loja', enderecoDaBusca);
+    return { pagina: null, pontos: hoje, lidas: [], bloqueado: false };
+  }
 
   const pontos: PontoDePreco[] = [];
   try {
@@ -703,6 +742,7 @@ export async function buscarOutrasLojas(
   const novas = copias.filter((c) => !opcoes.jaLidas?.has(c.timestamp));
   const escolhidas = espalharNoTempo(novas, opcoes.maximoDeCopias ?? 8);
   for (const copia of escolhidas) {
+    if (opcoes.parar?.()) break;
     if (lidas.length > 0) await esperar(opcoes.pausaMs ?? 1500);
     try {
       const resp = await buscar(`https://web.archive.org/web/${copia.timestamp}id_/${copia.original}`, { headers: ARQUIVO });

@@ -60,6 +60,7 @@ export async function GET(req: Request): Promise<Response> {
         copias: antes ? 6 : 15,
         copiasComparador: antes ? 3 : 6,
         pausaMs: 1000,
+        prazoMs: 58000,
         aoAvancar: (etapa) => void enviar({ etapa }),
       });
       const resultado = { ...dados, avisos, chave };
