@@ -1,12 +1,12 @@
 {
- "atualizadoEm": "2026-11-15T02:59:47.816Z",
+ "atualizadoEm": "2026-11-15T16:29:06.456Z",
  "produtos": [
   {
    "loja": "amazon",
    "id": "B0DSY93451",
    "url": "https://www.amazon.com.br/dp/B0DSY93451",
    "titulo": "Celular Samsung Galaxy S25 Ultra 5G, 256GB, 12GB RAM, Câmera Quádrupla de 200+50+10+50, Tela Grande de 6.9\", Titânio Azul",
-   "atualizadoEm": "2026-11-15T02:56:58.234Z",
+   "atualizadoEm": "2026-11-15T16:27:35.517Z",
    "quantidade": 31,
    "lojas": 3,
    "ultimoPrecoCentavos": 479880,
@@ -17,10 +17,10 @@
    "id": "B0F8PP7VMS",
    "url": "https://www.amazon.com.br/dp/B0F8PP7VMS",
    "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
-   "atualizadoEm": "2026-11-15T02:58:45.802Z",
-   "quantidade": 22,
+   "atualizadoEm": "2026-11-15T16:28:21.752Z",
+   "quantidade": 23,
    "lojas": 7,
-   "ultimoPrecoCentavos": 414900,
+   "ultimoPrecoCentavos": 394155,
    "menorPrecoCentavos": 386555
   },
   {
@@ -28,8 +28,8 @@
    "id": "B0CQD9VK7X",
    "url": "https://www.amazon.com.br/dp/B0CQD9VK7X",
    "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
-   "atualizadoEm": "2026-11-15T02:55:26.769Z",
-   "quantidade": 53,
+   "atualizadoEm": "2026-11-15T16:26:34.543Z",
+   "quantidade": 56,
    "lojas": 6,
    "ultimoPrecoCentavos": 569895,
    "menorPrecoCentavos": 411916

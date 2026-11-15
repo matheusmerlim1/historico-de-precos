@@ -6,13 +6,14 @@
  },
  "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
  "criadoEm": "2026-11-14T16:35:08.592Z",
- "atualizadoEm": "2026-11-15T02:55:26.769Z",
+ "atualizadoEm": "2026-11-15T16:26:34.543Z",
  "copiasLidas": [
   "20240211093757",
   "20240623131728",
   "20240716083812",
   "20240802035737",
   "20240923155325",
+  "20240925184342",
   "20241009010320",
   "20241207142828",
   "20250113201327",
@@ -22,6 +23,7 @@
   "20250411204448",
   "20250412215419",
   "20250413045346",
+  "20250422091405",
   "20250425104841",
   "20250709113156",
   "20250731003709",
@@ -29,6 +31,7 @@
   "20250826050022",
   "20250902133022",
   "20251004053848",
+  "20251006205210",
   "20251007050553",
   "20251009134909",
   "20251010173556",
@@ -38,6 +41,7 @@
   "20251026070425",
   "20251030152000",
   "20251103093041",
+  "20251111043643",
   "20251112045709",
   "20251115005631",
   "20251116101325",
@@ -48,13 +52,14 @@
   "20260309173747",
   "20260314010312",
   "20260502141316",
+  "20260511164433",
   "20260718212642",
   "20260803175222",
   "20260815175611",
   "20260909083034",
   "20261004180129"
  ],
- "copiasRestantes": 101,
+ "copiasRestantes": 76,
  "comparador": {
   "nome": "Celular Samsung Galaxy S24 Ultra 5G 256GB 12 GB",
   "url": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
@@ -217,6 +222,13 @@
    "link": "https://web.archive.org/web/20250413045346/https://www.amazon.com.br/dp/B0CQD9VK7X?&linkCode=sl1&tag=promopinke02-20&linkId=1b09464ee6bf527c7604be43b0eb970f&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
+   "data": "2025-04-22T09:14:05Z",
+   "precoCentavos": 582300,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250422091405/https://www.amazon.com.br/dp/B0CQD9VK7X/ref=cm_sw_r_as_gl_apa_gl_i_E5DYZD6HJCBYWF1CY1SQ?linkCode=ml1&tag=doguinho-tele-20"
+  },
+  {
    "data": "2025-07-09T11:31:56Z",
    "precoCentavos": 593308,
    "precoDeCentavos": null,
@@ -243,6 +255,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250902133022/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=pedro24-20&linkId=73ebb4f6fb39d036d7b0b1b1aaf88817&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2025-10-06T20:52:10Z",
+   "precoCentavos": 489871,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251006205210/https://www.amazon.com.br/dp/B0CQD9VK7X?tag=medaumdesco0e-20"
   },
   {
    "data": "2025-10-09T13:49:09Z",
@@ -292,6 +311,13 @@
    "precoDeCentavos": 567990,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20251103093041/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=prmz-20&linkId=7afc12940dfe70538893447ebb496b32&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2025-11-11T04:36:43Z",
+   "precoCentavos": 479876,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251111043643/https://www.amazon.com.br/dp/B0CQD9VK7X?smid=A1ZZFT5FULY4LN&linkCode=sl1&tag=grupotempromo-20&linkId=b83e65795bfe3a378480af8249791611&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
    "data": "2025-11-12T04:57:09Z",
@@ -459,7 +485,7 @@
   }
  ],
  "resumo": {
-  "quantidade": 35,
+  "quantidade": 38,
   "menor": {
    "data": "2026-07-19T06:42:40Z",
    "precoCentavos": 411916,
@@ -474,7 +500,7 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20240211093757/https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
-  "mediaCentavos": 549274,
+  "mediaCentavos": 546753,
   "atual": {
    "data": "2026-11-15T02:40:23.481Z",
    "precoCentavos": 569895,
