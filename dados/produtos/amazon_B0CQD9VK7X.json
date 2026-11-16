@@ -6,7 +6,7 @@
  },
  "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
  "criadoEm": "2026-11-14T16:35:08.592Z",
- "atualizadoEm": "2026-11-15T16:26:34.543Z",
+ "atualizadoEm": "2026-11-16T19:41:21.707Z",
  "copiasLidas": [
   "20240211093757",
   "20240623131728",
@@ -14,6 +14,7 @@
   "20240802035737",
   "20240923155325",
   "20240925184342",
+  "20241004023100",
   "20241009010320",
   "20241207142828",
   "20250113201327",
@@ -25,6 +26,7 @@
   "20250413045346",
   "20250422091405",
   "20250425104841",
+  "20250513032110",
   "20250709113156",
   "20250731003709",
   "20250817003158",
@@ -33,6 +35,7 @@
   "20251004053848",
   "20251006205210",
   "20251007050553",
+  "20251008172727",
   "20251009134909",
   "20251010173556",
   "20251010212437",
@@ -41,6 +44,7 @@
   "20251026070425",
   "20251030152000",
   "20251103093041",
+  "20251109134642",
   "20251111043643",
   "20251112045709",
   "20251115005631",
@@ -52,6 +56,7 @@
   "20260309173747",
   "20260314010312",
   "20260502141316",
+  "20260506072713",
   "20260511164433",
   "20260718212642",
   "20260803175222",
@@ -59,7 +64,7 @@
   "20260909083034",
   "20261004180129"
  ],
- "copiasRestantes": 76,
+ "copiasRestantes": 71,
  "comparador": {
   "nome": "Celular Samsung Galaxy S24 Ultra 5G 256GB 12 GB",
   "url": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
@@ -313,6 +318,13 @@
    "link": "https://web.archive.org/web/20251103093041/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=prmz-20&linkId=7afc12940dfe70538893447ebb496b32&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
+   "data": "2025-11-09T13:46:42Z",
+   "precoCentavos": 479876,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251109134642/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=urutelegram-20&linkId=ed715d66541022a37e6eab5d80c65375&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
    "data": "2025-11-11T04:36:43Z",
    "precoCentavos": 479876,
    "precoDeCentavos": null,
@@ -418,6 +430,13 @@
    "link": "https://web.archive.org/web/20260314010312/https://www.amazon.com.br/dp/B0CQD9VK7X?linkCode=ogi&th=1&psc=1&tag=tudocel-20"
   },
   {
+   "data": "2026-05-06T07:27:13Z",
+   "precoCentavos": 503820,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260506072713/https://www.amazon.com.br/dp/B0CQD9VK7X?tag=mlkpobrebluesky-20"
+  },
+  {
    "data": "2026-05-20T19:50:27Z",
    "precoCentavos": 456900,
    "precoDeCentavos": null,
@@ -482,10 +501,25 @@
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
+  },
+  {
+   "data": "2026-11-16T19:41:23.175Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-16T19:41:23.175Z",
+   "precoCentavos": 579398,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
   }
  ],
  "resumo": {
-  "quantidade": 38,
+  "quantidade": 41,
   "menor": {
    "data": "2026-07-19T06:42:40Z",
    "precoCentavos": 411916,
@@ -500,15 +534,15 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20240211093757/https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
-  "mediaCentavos": 546753,
+  "mediaCentavos": 544871,
   "atual": {
-   "data": "2026-11-15T02:40:23.481Z",
-   "precoCentavos": 569895,
+   "data": "2026-11-16T19:41:23.175Z",
+   "precoCentavos": 579398,
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
   },
   "primeiraData": "2024-02-11T09:37:57Z",
-  "veredito": "O último preço está perto da média; o menor já visto foi R$ 4.119,16."
+  "veredito": "O último preço está 6% acima da média; o menor já visto foi R$ 4.119,16."
  }
 }
