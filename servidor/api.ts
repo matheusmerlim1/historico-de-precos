@@ -1,9 +1,11 @@
 // Servidor da página pública (função da Vercel): recebe o link, monta o histórico na hora e
 // devolve, linha a linha (NDJSON), o andamento e o resultado. A página chama
 //   GET /api/historico?link=<link do produto>
+// e, para quem digita o nome em vez do link, GET /api/historico?nome=<nome> devolve (JSON) os
+// produtos achados na busca da Amazon, para a pessoa escolher o certo.
 // Empacotado em api/historico.js (ver README). Sem estado próprio: parte do histórico que o robô
 // diário já salvou em dados/ (lido da página no GitHub Pages) e soma o que achar agora.
-import { ehLinkCurto, identificarLink, resolverLink } from '../robo/motor.ts';
+import { buscarPorNome, ehLinkCurto, identificarLink, resolverLink } from '../robo/motor.ts';
 import { montarHistorico } from '../robo/montar.ts';
 import type { ArquivoProduto } from '../robo/montar.ts';
 
@@ -30,9 +32,24 @@ async function salvoPeloRobo(chave: string): Promise<ArquivoProduto | null> {
 
 export async function GET(req: Request): Promise<Response> {
   const cors = cabecalhosCors(req);
-  const link = new URL(req.url).searchParams.get('link')?.trim() ?? '';
+  const parametros = new URL(req.url).searchParams;
+  const nome = parametros.get('nome')?.trim().replace(/\s+/g, ' ') ?? '';
+  if (nome) {
+    if (nome.length < 2 || nome.length > 150) {
+      return Response.json({ erro: 'Digite o nome do produto (de 2 a 150 letras).' }, { status: 400, headers: cors });
+    }
+    try {
+      const busca = (url: string, init?: RequestInit) => fetch(url, { ...init, signal: AbortSignal.timeout(20000) });
+      const produtos = await buscarPorNome(nome, busca);
+      return Response.json({ produtos }, { headers: { ...cors, 'Cache-Control': 'public, max-age=1800' } });
+    } catch (erro) {
+      const motivo = erro instanceof Error ? erro.message : String(erro);
+      return Response.json({ erro: `Não consegui buscar na Amazon agora (${motivo}).` }, { status: 502, headers: cors });
+    }
+  }
+  const link = parametros.get('link')?.trim() ?? '';
   if (!/^https?:\/\/\S{4,1990}$/.test(link)) {
-    return Response.json({ erro: 'Cole o link de um produto.' }, { status: 400, headers: cors });
+    return Response.json({ erro: 'Cole o link ou digite o nome de um produto.' }, { status: 400, headers: cors });
   }
 
   const codificador = new TextEncoder();

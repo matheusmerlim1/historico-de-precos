@@ -36,6 +36,13 @@ Se o servidor não responder, a página mostra o histórico que o robô já salv
 
 Depois disso a Vercel publica sozinha a cada push.
 
+## Busca pelo nome
+
+Quem digita o nome em vez do link recebe os produtos achados na busca da Amazon (`?nome=`) e os já
+acompanhados que combinam, e escolhe o certo. A Amazon às vezes responde com uma verificação
+anti-robô (`bm-verify`); a página avisa e sugere colar o link. O Mercado Livre não entra na busca
+pelo nome porque pede verificação de conta a robôs.
+
 ## Mexer no código
 
 O servidor é um arquivo só, gerado a partir do TypeScript (rodar depois de mudar `servidor/` ou `robo/`):
@@ -43,6 +50,7 @@ O servidor é um arquivo só, gerado a partir do TypeScript (rodar depois de mud
 ```
 npx esbuild@0.24.0 servidor/api.ts --bundle --platform=node --format=esm --target=node20 --outfile=api/historico.mjs --legal-comments=none
 node ferramentas/servidor-local.mjs      # testa em http://127.0.0.1:8787/api/historico?link=...
+                                         # e http://127.0.0.1:8787/api/historico?nome=... (busca pelo nome)
 ```
 
 Robô no PC (Node 22 ou mais novo, sem instalar nada):

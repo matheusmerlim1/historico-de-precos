@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Histórico de preço — Amazon e Mercado Livre</title>
-    <meta name="description" content="Cole o link de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo." />
+    <meta name="description" content="Cole o link ou digite o nome de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" />
-    <link rel="stylesheet" href="estilo.css?v=8" />
-    <link rel="stylesheet" href="historico-tela.css?v=8" />
+    <link rel="stylesheet" href="estilo.css?v=9" />
+    <link rel="stylesheet" href="historico-tela.css?v=9" />
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -26,11 +26,11 @@
         </a>
 
         <form id="form-busca" class="busca" role="search" novalidate>
-          <label for="link" class="sr">Link do produto</label>
-          <input type="url" id="link" name="link" placeholder="Cole o link de um produto da Amazon ou do Mercado Livre" autocomplete="off" required />
+          <label for="link" class="sr">Link ou nome do produto</label>
+          <input type="search" id="link" name="link" placeholder="Cole o link ou digite o nome do produto" enterkeyhint="search" autocomplete="off" required />
           <button type="submit">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4.2-4.2" /></svg>
-            <span class="sr">Ver histórico</span>
+            <span class="sr">Buscar</span>
           </button>
         </form>
 
@@ -53,10 +53,10 @@
         <div class="banner-texto">
           <h1 id="titulo-busca">A promoção é de verdade?</h1>
           <p>
-            Cole o link do produto na busca lá em cima e veja como o preço mudou ao longo do tempo,
-            nessa loja e nas outras que vendem o mesmo produto.
+            Cole o link do produto ou digite o nome dele na busca lá em cima e veja como o preço mudou
+            ao longo do tempo, nessa loja e nas outras que vendem o mesmo produto.
           </p>
-          <p class="banner-dica">Aceita amazon.com.br e mercadolivre.com.br, inclusive links curtos (amzn.to). A primeira consulta de um produto leva até 1 minuto.</p>
+          <p class="banner-dica">Aceita links da amazon.com.br e do mercadolivre.com.br (inclusive amzn.to) ou o nome do produto, como “Galaxy S24 Ultra 256GB”. A primeira consulta de um produto leva até 1 minuto.</p>
           <a class="banner-botao" href="#titulo-lista">Ver produtos acompanhados</a>
         </div>
         <svg class="banner-arte" viewBox="0 0 320 200" aria-hidden="true">
@@ -131,9 +131,9 @@
       </p>
     </footer>
 
-    <script src="config.js?v=8"></script>
-    <script src="historico-tela.js?v=8"></script>
-    <script src="pagina.js?v=8"></script>
+    <script src="config.js?v=9"></script>
+    <script src="historico-tela.js?v=9"></script>
+    <script src="pagina.js?v=9"></script>
 <!-- === Botao de volta ao portfolio - cole antes de </body> === -->
 <nav aria-label="Portf&oacute;lio">
 <a id="mr-portfolio-btn" href="https://matheusmerlim1.github.io/" target="_blank" rel="noopener"

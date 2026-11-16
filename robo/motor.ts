@@ -818,3 +818,76 @@ export function resumirPorLoja(pontos: PontoDePreco[]): ResumoDeLoja[] {
     return a.ultimo.precoCentavos - b.ultimo.precoCentavos;
   });
 }
+
+// ---------- Busca pelo nome do produto ----------
+
+export interface ProdutoEncontrado {
+  titulo: string;
+  link: string;
+  precoCentavos: number | null;
+  imagem: string | null;
+}
+
+const PATROCINADO = /^(an[uú]ncio patrocinado|patrocinado|sponsored ad)\s*[–—-]\s*/i;
+
+/** Lê os produtos da página de busca da Amazon (título, link /dp/, preço à vista e foto). */
+export function lerBuscaDaAmazon(html: string): ProdutoEncontrado[] {
+  const blocos = html.split(/(?=<div[^>]*\bdata-component-type="s-search-result")/).slice(1);
+  const vistos = new Set<string>();
+  const lista: ProdutoEncontrado[] = [];
+  for (const bloco of blocos) {
+    const asin = bloco.slice(0, 600).match(/data-asin="([A-Z0-9]{10})"/)?.[1];
+    if (!asin || vistos.has(asin)) continue;
+    const h2 = bloco.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/);
+    const rotulo = h2?.[0].match(/aria-label="([^"]+)"/)?.[1];
+    const texto = rotulo ?? h2?.[1]?.replace(/<[^>]+>/g, ' ');
+    const titulo = texto ? decodificar(texto).replace(/\s+/g, ' ').replace(PATROCINADO, '').trim() : '';
+    if (!titulo) continue;
+    // Só o preço a pagar (span "a-price"); o "a-price a-text-price" é o preço "de", riscado.
+    const preco = bloco.match(/<span class="a-price"[^>]*>\s*<span class="a-offscreen">([^<]+)</)?.[1];
+    const imagem = bloco.match(/<img[^>]*class="s-image"[^>]*>/)?.[0].match(/src="(https:\/\/[^"]+)"/)?.[1] ?? null;
+    vistos.add(asin);
+    lista.push({
+      titulo,
+      link: `https://www.amazon.com.br/dp/${asin}`,
+      precoCentavos: precoBrParaCentavos(preco ? decodificar(preco) : null),
+      imagem,
+    });
+  }
+  return lista;
+}
+
+/** Parte das palavras do nome procurado que aparecem no título (0 a 1). */
+export function notaDaBusca(nome: string, titulo: string): number {
+  const procuradas = palavrasDoTitulo(nome, 12);
+  if (procuradas.length === 0) return 0;
+  const doTitulo = new Set(normalizarTexto(titulo).split(' '));
+  return procuradas.filter((p) => doTitulo.has(p)).length / procuradas.length;
+}
+
+const ACESSORIO = /\b(capa|capinha|case|pelicula|protetor|carregador|fonte|cabo|suporte|kit|adesivo|skin|bolsa|estojo|controle remoto|refil|filtro)\b/;
+
+/** O título é de um acessório (capa, película, carregador...) e o nome procurado não pede acessório? */
+export function ehAcessorioNaoPedido(nome: string, titulo: string): boolean {
+  const inicio = normalizarTexto(titulo).split(' ').slice(0, 2).join(' '); // "Capa ..." ou "Marca Capa ..."
+  const pedido = normalizarTexto(nome);
+  const m = inicio.match(ACESSORIO);
+  return !!m && !ACESSORIO.test(pedido) && !pedido.includes(m[1]!);
+}
+
+/** Procura o produto pelo nome na Amazon e devolve os mais parecidos com o que foi digitado. */
+export async function buscarPorNome(nome: string, buscar: Buscar = fetch, maximo = 8): Promise<ProdutoEncontrado[]> {
+  const resposta = await buscar(`https://www.amazon.com.br/s?k=${encodeURIComponent(nome.trim())}`, { headers: NAVEGADOR });
+  if (!resposta.ok) throw new Error(`a Amazon respondeu ${resposta.status}`);
+  const html = await resposta.text();
+  const encontrados = lerBuscaDaAmazon(html);
+  if (encontrados.length === 0 && /bm-verify|captcha|validateCaptcha/i.test(html)) {
+    throw new Error('a Amazon pediu uma verificação de robô agora');
+  }
+  return encontrados
+    .map((p, ordem) => ({ p, ordem, nota: notaDaBusca(nome, p.titulo) }))
+    .filter((x) => x.nota >= 0.5 && !ehAcessorioNaoPedido(nome, x.p.titulo))
+    .sort((a, b) => b.nota - a.nota || a.ordem - b.ordem)
+    .slice(0, maximo)
+    .map((x) => x.p);
+}

@@ -260,5 +260,47 @@
     }, 200);
   });
 
-  window.HistoricoTela = { desenhar: desenharGuardando, reais, dataCurta, esc };
+  /**
+   * Lista de produtos achados pelo nome, para a pessoa escolher o certo.
+   * achados = { produtos (busca da Amazon), acompanhados (já salvos), erro }; cada produto tem
+   * titulo, link, precoCentavos e imagem (opcional); aoEscolher(link, chave) abre o histórico.
+   */
+  function desenharEncontrados(container, nome, achados, aoEscolher) {
+    desenhados.delete(container);
+    const { erro = '' } = achados;
+    // O mesmo produto salvo e achado na Amazon aparece uma vez só, em "Já acompanhados", com a foto.
+    const fotoPorLink = new Map((achados.produtos || []).map((p) => [p.link, p.imagem]));
+    const acompanhados = (achados.acompanhados || []).map((p) => ({ ...p, imagem: p.imagem || fotoPorLink.get(p.link) || null }));
+    const jaSalvos = new Set(acompanhados.map((p) => p.link));
+    const produtos = (achados.produtos || []).filter((p) => !jaSalvos.has(p.link));
+    const item = (p, origem) => {
+      const foto = linkSeguro(p.imagem)
+        ? `<img src="${esc(p.imagem)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l5-5 4 4 3-3 4 4"/><path d="M15 7h5v5"/></svg>';
+      const preco = p.precoCentavos != null ? reais(p.precoCentavos) : 'sem preço agora';
+      return `<li><button type="button" class="hp-achado" data-link="${esc(p.link)}" data-chave="${esc(p.chave || '')}">
+        <span class="hp-achado-foto">${foto}</span>
+        <span class="hp-achado-nome">${esc(p.titulo)}</span>
+        <span class="hp-achado-preco">${esc(preco)}</span>
+        <span class="hp-achado-origem">${esc(origem)}</span>
+      </button></li>`;
+    };
+    const grupo = (titulo, lista, origem) =>
+      lista.length ? `<h3 class="hp-subtitulo">${titulo}</h3><ul class="hp-achados">${lista.map((p) => item(p, origem)).join('')}</ul>` : '';
+    const vazio = !produtos.length && !acompanhados.length && !erro;
+    container.innerHTML = `
+      <section class="hp-resultado hp-busca">
+        <h2 class="hp-titulo">Produtos encontrados para “${esc(nome)}”</h2>
+        <p class="hp-loja">Escolha o produto certo (modelo, capacidade e cor) para ver o histórico de preço.</p>
+        ${grupo('Já acompanhados', acompanhados, 'histórico salvo · último preço')}
+        ${grupo('Na Amazon hoje', produtos, 'preço hoje na Amazon')}
+        ${erro ? `<ul class="hp-avisos"><li>${esc(erro)}</li></ul>` : ''}
+        ${vazio ? '<p>Nada encontrado. Tente com menos palavras (marca e modelo) ou cole o link do produto.</p>' : ''}
+      </section>`;
+    container.querySelectorAll('[data-link]').forEach((b) =>
+      b.addEventListener('click', () => aoEscolher(b.dataset.link, b.dataset.chave || null)),
+    );
+  }
+
+  window.HistoricoTela = { desenhar: desenharGuardando, desenharEncontrados, reais, dataCurta, esc };
 })();

@@ -14,6 +14,7 @@
   --hp-s5: #e87ba4;
   --hp-s6: #008300;
   --hp-superficie: #ffffff;
+  --hp-acento: #5b2bd1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +33,7 @@
     --hp-s5: #d55181;
     --hp-s6: #0ca30c;
     --hp-superficie: #181d1a;
+    --hp-acento: #a98bff;
   }
 }
 
@@ -50,6 +52,7 @@
   --hp-s5: #d55181;
   --hp-s6: #0ca30c;
   --hp-superficie: #181d1a;
+  --hp-acento: #a98bff;
 }
 
 .hp-resultado {
@@ -253,4 +256,96 @@
 .hp-rolagem:focus-visible {
   outline: 3px solid var(--hp-s1);
   outline-offset: 2px;
+}
+
+/* Produtos achados pelo nome */
+.hp-subtitulo {
+  margin: 1.25rem 0 0.6rem;
+  font-size: 1rem;
+}
+
+.hp-achados {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hp-achado {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 1px solid var(--hp-borda);
+  border-radius: 10px;
+  background: var(--hp-superficie);
+  color: var(--hp-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.hp-achado:hover {
+  border-color: var(--hp-acento);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.12);
+}
+
+.hp-achado:hover .hp-achado-nome {
+  text-decoration: underline;
+}
+
+.hp-achado:focus-visible {
+  outline: 3px solid var(--hp-acento);
+  outline-offset: 2px;
+}
+
+.hp-achado-foto {
+  display: grid;
+  place-items: center;
+  height: 140px;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.hp-achado-foto img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.hp-achado-foto svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: #8a8a96;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hp-achado-nome {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.hp-achado-preco {
+  margin-top: auto;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.hp-achado-origem {
+  color: var(--hp-suave);
+  font-size: 0.8rem;
 }

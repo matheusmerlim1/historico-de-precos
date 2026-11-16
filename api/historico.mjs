@@ -567,6 +567,54 @@ async function buscarOutrasLojas(produto, titulo, opcoes = {}) {
   }
   return { pagina, pontos, lidas, bloqueado };
 }
+var PATROCINADO = /^(an[uú]ncio patrocinado|patrocinado|sponsored ad)\s*[–—-]\s*/i;
+function lerBuscaDaAmazon(html) {
+  const blocos = html.split(/(?=<div[^>]*\bdata-component-type="s-search-result")/).slice(1);
+  const vistos = /* @__PURE__ */ new Set();
+  const lista = [];
+  for (const bloco of blocos) {
+    const asin = bloco.slice(0, 600).match(/data-asin="([A-Z0-9]{10})"/)?.[1];
+    if (!asin || vistos.has(asin)) continue;
+    const h2 = bloco.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/);
+    const rotulo = h2?.[0].match(/aria-label="([^"]+)"/)?.[1];
+    const texto = rotulo ?? h2?.[1]?.replace(/<[^>]+>/g, " ");
+    const titulo = texto ? decodificar(texto).replace(/\s+/g, " ").replace(PATROCINADO, "").trim() : "";
+    if (!titulo) continue;
+    const preco = bloco.match(/<span class="a-price"[^>]*>\s*<span class="a-offscreen">([^<]+)</)?.[1];
+    const imagem = bloco.match(/<img[^>]*class="s-image"[^>]*>/)?.[0].match(/src="(https:\/\/[^"]+)"/)?.[1] ?? null;
+    vistos.add(asin);
+    lista.push({
+      titulo,
+      link: `https://www.amazon.com.br/dp/${asin}`,
+      precoCentavos: precoBrParaCentavos(preco ? decodificar(preco) : null),
+      imagem
+    });
+  }
+  return lista;
+}
+function notaDaBusca(nome, titulo) {
+  const procuradas = palavrasDoTitulo(nome, 12);
+  if (procuradas.length === 0) return 0;
+  const doTitulo = new Set(normalizarTexto(titulo).split(" "));
+  return procuradas.filter((p) => doTitulo.has(p)).length / procuradas.length;
+}
+var ACESSORIO = /\b(capa|capinha|case|pelicula|protetor|carregador|fonte|cabo|suporte|kit|adesivo|skin|bolsa|estojo|controle remoto|refil|filtro)\b/;
+function ehAcessorioNaoPedido(nome, titulo) {
+  const inicio = normalizarTexto(titulo).split(" ").slice(0, 2).join(" ");
+  const pedido = normalizarTexto(nome);
+  const m = inicio.match(ACESSORIO);
+  return !!m && !ACESSORIO.test(pedido) && !pedido.includes(m[1]);
+}
+async function buscarPorNome(nome, buscar = fetch, maximo = 8) {
+  const resposta = await buscar(`https://www.amazon.com.br/s?k=${encodeURIComponent(nome.trim())}`, { headers: NAVEGADOR });
+  if (!resposta.ok) throw new Error(`a Amazon respondeu ${resposta.status}`);
+  const html = await resposta.text();
+  const encontrados = lerBuscaDaAmazon(html);
+  if (encontrados.length === 0 && /bm-verify|captcha|validateCaptcha/i.test(html)) {
+    throw new Error("a Amazon pediu uma verifica\xE7\xE3o de rob\xF4 agora");
+  }
+  return encontrados.map((p, ordem) => ({ p, ordem, nota: notaDaBusca(nome, p.titulo) })).filter((x) => x.nota >= 0.5 && !ehAcessorioNaoPedido(nome, x.p.titulo)).sort((a, b) => b.nota - a.nota || a.ordem - b.ordem).slice(0, maximo).map((x) => x.p);
+}
 
 // robo/montar.ts
 var FOLGA_FINAL_MS = 6e3;
@@ -677,9 +725,24 @@ async function salvoPeloRobo(chave) {
 }
 async function GET(req) {
   const cors = cabecalhosCors(req);
-  const link = new URL(req.url).searchParams.get("link")?.trim() ?? "";
+  const parametros = new URL(req.url).searchParams;
+  const nome = parametros.get("nome")?.trim().replace(/\s+/g, " ") ?? "";
+  if (nome) {
+    if (nome.length < 2 || nome.length > 150) {
+      return Response.json({ erro: "Digite o nome do produto (de 2 a 150 letras)." }, { status: 400, headers: cors });
+    }
+    try {
+      const busca = (url, init) => fetch(url, { ...init, signal: AbortSignal.timeout(2e4) });
+      const produtos = await buscarPorNome(nome, busca);
+      return Response.json({ produtos }, { headers: { ...cors, "Cache-Control": "public, max-age=1800" } });
+    } catch (erro) {
+      const motivo = erro instanceof Error ? erro.message : String(erro);
+      return Response.json({ erro: `N\xE3o consegui buscar na Amazon agora (${motivo}).` }, { status: 502, headers: cors });
+    }
+  }
+  const link = parametros.get("link")?.trim() ?? "";
   if (!/^https?:\/\/\S{4,1990}$/.test(link)) {
-    return Response.json({ erro: "Cole o link de um produto." }, { status: 400, headers: cors });
+    return Response.json({ erro: "Cole o link ou digite o nome de um produto." }, { status: 400, headers: cors });
   }
   const codificador = new TextEncoder();
   const fluxo = new TransformStream();

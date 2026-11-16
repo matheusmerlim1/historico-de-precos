@@ -1,7 +1,8 @@
 // Página pública: manda o link ao servidor, que monta o histórico na hora (sem pedido nem login).
 // Se o servidor não responder, mostra o histórico que o robô diário já salvou em dados/.
+// Quem digita o nome do produto em vez do link vê os produtos achados (salvos e na Amazon) e escolhe um.
 (function () {
-  const { desenhar, reais, dataCurta, esc } = window.HistoricoTela;
+  const { desenhar, desenharEncontrados, reais, dataCurta, esc } = window.HistoricoTela;
   const SERVIDOR = (window.HISTORICO_SERVIDOR || '').replace(/\/$/, '');
   const form = document.getElementById('form-busca');
   const campo = document.getElementById('link');
@@ -9,6 +10,66 @@
   const status = document.getElementById('status');
   const resultado = document.getElementById('resultado');
   let consultaAtual = 0;
+  let produtosSalvos = [];
+
+  /** Texto colado é link (com ou sem https://)? Senão, é o nome do produto. */
+  function comoLink(texto) {
+    if (/^https?:\/\//i.test(texto)) return texto;
+    if (/^(www\.)?(amazon\.com\.br|mercadoli(vre|bre)\.com\.br|amzn\.to|a\.co|meli\.la|produto\.mercadolivre\.com\.br)\//i.test(texto)) {
+      return `https://${texto}`;
+    }
+    return null;
+  }
+
+  function normalizar(texto) {
+    return texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+
+  /** Produtos já acompanhados cujo título tem todas as palavras digitadas. */
+  function salvosParecidos(nome) {
+    const palavras = normalizar(nome).split(' ').filter((p) => p.length >= 2);
+    if (!palavras.length) return [];
+    return produtosSalvos
+      .filter((p) => {
+        const titulo = ` ${normalizar(p.titulo || '')} `;
+        return palavras.every((w) => titulo.includes(` ${w}`));
+      })
+      .map((p) => ({
+        titulo: p.titulo || p.id,
+        link: p.url,
+        chave: `${p.loja}_${p.id}`,
+        precoCentavos: p.ultimoPrecoCentavos,
+        imagem: null,
+      }));
+  }
+
+  async function procurarPorNome(nome) {
+    const minhaConsulta = ++consultaAtual;
+    resultado.innerHTML = '';
+    botao.disabled = true;
+    status.textContent = `Procurando “${nome}”…`;
+    const acompanhados = salvosParecidos(nome);
+    let produtos = [];
+    let erro = '';
+    try {
+      if (!SERVIDOR) throw new Error('a busca pelo nome precisa do servidor');
+      const resp = await fetch(`${SERVIDOR}/api/historico?nome=${encodeURIComponent(nome)}`);
+      const corpo = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(corpo.erro || `o servidor respondeu ${resp.status}`);
+      produtos = corpo.produtos || [];
+    } catch (e) {
+      erro = `${e.message.replace(/\.$/, '')}. Tente de novo em alguns minutos ou cole o link do produto.`;
+    }
+    if (minhaConsulta !== consultaAtual) return;
+    botao.disabled = false;
+    status.textContent = '';
+    history.replaceState(null, '', `${location.pathname}?busca=${encodeURIComponent(nome)}`);
+    desenharEncontrados(resultado, nome, { produtos, acompanhados, erro }, (link, chave) => {
+      campo.value = link;
+      consultar(link, chave);
+      document.getElementById('painel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
   // Mesma regra de robo/motor.ts (identificarLink), para achar o histórico salvo sem o servidor.
   function identificarLink(texto) {
@@ -67,7 +128,7 @@
     const minhaConsulta = ++consultaAtual;
     resultado.innerHTML = '';
     if (!link && !chaveSalva) {
-      status.textContent = 'Cole o link do produto.';
+      status.textContent = 'Cole o link ou digite o nome do produto.';
       campo.focus();
       return;
     }
@@ -111,7 +172,10 @@
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    consultar(campo.value.trim(), null);
+    const texto = campo.value.trim();
+    const link = comoLink(texto);
+    if (link || !texto) consultar(link || '', null);
+    else procurarPorNome(texto);
     document.getElementById('painel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
@@ -208,6 +272,7 @@
     try {
       const resp = await fetch(`dados/indice.json?t=${Date.now()}`, { cache: 'no-store' });
       const { produtos } = await resp.json();
+      produtosSalvos = produtos;
       if (!produtos.length) {
         lista.textContent = 'Nenhum produto ainda. Consulte um link na busca e ele aparece aqui depois da conferência diária.';
         desenharLojas([]);
@@ -245,11 +310,16 @@
     }
   }
 
-  carregarLista();
+  const carregando = carregarLista();
   const parametros = new URLSearchParams(location.search);
   const linkInicial = parametros.get('link');
+  const buscaInicial = parametros.get('busca');
   const inicial = parametros.get('produto');
-  if (linkInicial) {
+  if (buscaInicial && !linkInicial) {
+    // ?busca=... repete a busca pelo nome (dá para compartilhar o endereço).
+    campo.value = buscaInicial;
+    carregando.then(() => procurarPorNome(buscaInicial));
+  } else if (linkInicial) {
     // ?link=... consulta na hora (dá para compartilhar o endereço de uma consulta).
     campo.value = linkInicial;
     consultar(linkInicial, null);
