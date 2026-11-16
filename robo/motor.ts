@@ -3,7 +3,8 @@
 // Não depende de nenhuma biblioteca: roda no app local (tsx) e no robô do repositório público
 // (node --experimental-strip-types). O repositório historico-de-precos tem uma cópia deste arquivo.
 
-export type Loja = 'amazon' | 'mercadolivre';
+/** buscape = página de produto do comparador Buscapé (várias lojas; usada quando a busca pelo nome cai lá). */
+export type Loja = 'amazon' | 'mercadolivre' | 'buscape';
 
 export interface ProdutoLink {
   loja: Loja;
@@ -11,7 +12,7 @@ export interface ProdutoLink {
   url: string;
 }
 
-export type Fonte = 'arquivo' | 'loja' | 'telegram';
+export type Fonte = 'arquivo' | 'loja' | 'telegram' | 'comparador';
 
 export interface PontoDePreco {
   data: string;
@@ -87,6 +88,12 @@ export function identificarLink(texto: string): ProdutoLink | null {
     if (!m) return null;
     const limpa = `${url.origin}${url.pathname}`;
     return { loja: 'mercadolivre', id: `MLB${m[1]}`, url: limpa };
+  }
+
+  if (/(^|\.)buscape\.com\.br$/.test(host)) {
+    const m = url.pathname.match(/^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/);
+    if (!m || /^(search|lead|busca|ofertas|cupons|promocoes)$/.test(m[1]!)) return null;
+    return { loja: 'buscape', id: m[2]!, url: `https://www.buscape.com.br/${m[1]}/${m[2]}` };
   }
 
   return null;
@@ -690,6 +697,7 @@ export function lerOfertasDoBuscape(html: string): OfertaDeLoja[] {
 const NOME_DA_LOJA: Record<Loja, RegExp> = {
   amazon: /^amazon(\.com\.br)?$/i,
   mercadolivre: /^mercado\s*livre$/i,
+  buscape: /^$/, // produto do Buscapé: toda oferta é de uma loja
 };
 
 function pontosDasOfertas(
@@ -826,6 +834,9 @@ export interface ProdutoEncontrado {
   link: string;
   precoCentavos: number | null;
   imagem: string | null;
+  /** De onde veio (sem o campo: Amazon). No Buscapé, o preço é o menor entre `lojas` lojas. */
+  fonte?: 'amazon' | 'buscape';
+  lojas?: number;
 }
 
 const PATROCINADO = /^(an[uú]ncio patrocinado|patrocinado|sponsored ad)\s*[–—-]\s*/i;
@@ -890,4 +901,106 @@ export async function buscarPorNome(nome: string, buscar: Buscar = fetch, maximo
     .sort((a, b) => b.nota - a.nota || a.ordem - b.ordem)
     .slice(0, maximo)
     .map((x) => x.p);
+}
+
+// ---------- Produto do Buscapé (quando a busca pelo nome não consegue usar a Amazon) ----------
+
+/** Nome do produto na página do Buscapé (o <title> sem o "em Promoção é no Buscapé"). */
+export function lerTituloDoBuscape(html: string): string | null {
+  const bruto = html.match(/<title>([^<]*)<\/title>/)?.[1];
+  if (!bruto) return null;
+  const titulo = decodificar(bruto).replace(/\s*(em promoção é no buscapé|\|\s*buscapé|- buscapé)\s*$/i, '').trim();
+  return titulo || null;
+}
+
+/** Menor preço de cada dia guardado pelo próprio Buscapé (bloco priceHistory da página do produto). */
+export function lerHistoricoDoBuscape(html: string, link: string): PontoDePreco[] {
+  const dados = dadosNext(html) as {
+    props?: { initialReduxState?: { priceHistory?: { priceHistory?: Record<string, { days?: unknown[] }> } } };
+  } | null;
+  const porProduto = dados?.props?.initialReduxState?.priceHistory?.priceHistory ?? {};
+  const pontos: PontoDePreco[] = [];
+  for (const { days } of Object.values(porProduto)) {
+    for (const dia of (days ?? []) as Array<{ date?: string; price?: number }>) {
+      if (!dia.date || !/^\d{4}-\d{2}-\d{2}$/.test(dia.date) || typeof dia.price !== 'number' || !(dia.price > 0)) continue;
+      pontos.push({
+        data: `${dia.date}T12:00:00Z`,
+        precoCentavos: Math.round(dia.price * 100),
+        precoDeCentavos: null,
+        fonte: 'comparador',
+        link,
+      });
+    }
+  }
+  return pontos.sort((a, b) => a.data.localeCompare(b.data));
+}
+
+/** Lê a página do produto no Buscapé: nome e histórico do menor preço de cada dia. */
+export async function lerPaginaDoBuscape(
+  produto: ProdutoLink,
+  buscar: Buscar = fetch,
+): Promise<{ titulo: string | null; pontos: PontoDePreco[] }> {
+  try {
+    const resposta = await buscar(produto.url, { headers: NAVEGADOR });
+    if (!resposta.ok) return { titulo: null, pontos: [] };
+    const html = await resposta.text();
+    return { titulo: lerTituloDoBuscape(html), pontos: lerHistoricoDoBuscape(html, produto.url) };
+  } catch {
+    return { titulo: null, pontos: [] };
+  }
+}
+
+/** Produtos achados pelo nome na busca do Buscapé (reserva quando a Amazon recusa a busca). */
+export function lerBuscaDoBuscape(html: string, nome: string, maximo = 8): ProdutoEncontrado[] {
+  const dados = dadosNext(html) as { props?: { initialReduxState?: { hits?: { hits?: unknown[] } } } } | null;
+  const resultados = (dados?.props?.initialReduxState?.hits?.hits ?? []) as Array<{
+    name?: string;
+    url?: string;
+    type?: string;
+    price?: number;
+    image?: unknown;
+    storeCount?: number;
+  }>;
+  const lista: ProdutoEncontrado[] = [];
+  const vistos = new Set<string>();
+  resultados.forEach((r) => {
+    if (r.type !== 'product' || !r.name || !r.url || !/^\/[a-z0-9-]+\/[a-z0-9-]+$/.test(r.url)) return;
+    if (vistos.has(r.url) || notaDaBusca(nome, r.name) < 0.5 || ehAcessorioNaoPedido(nome, r.name)) return;
+    vistos.add(r.url);
+    lista.push({
+      titulo: r.name,
+      link: `https://www.buscape.com.br${r.url}`,
+      precoCentavos: typeof r.price === 'number' && r.price > 0 ? Math.round(r.price * 100) : null,
+      imagem: typeof r.image === 'string' && /^https:\/\//.test(r.image) ? r.image : null,
+      fonte: 'buscape',
+      ...(typeof r.storeCount === 'number' ? { lojas: r.storeCount } : {}),
+    });
+  });
+  return lista
+    .map((p, ordem) => ({ p, ordem, nota: notaDaBusca(nome, p.titulo) }))
+    .sort((a, b) => b.nota - a.nota || a.ordem - b.ordem)
+    .slice(0, maximo)
+    .map((x) => x.p);
+}
+
+export async function buscarNoBuscapePorNome(nome: string, buscar: Buscar = fetch): Promise<ProdutoEncontrado[]> {
+  const resposta = await buscar(`https://www.buscape.com.br/search?q=${encodeURIComponent(nome.trim())}`, { headers: NAVEGADOR });
+  if (!resposta.ok) throw new Error(`o Buscapé respondeu ${resposta.status}`);
+  return lerBuscaDoBuscape(await resposta.text(), nome);
+}
+
+/** Busca pelo nome: Amazon primeiro; se ela recusar (comum vindo de servidores), o Buscapé. */
+export async function buscarPorNomeComReserva(
+  nome: string,
+  buscar: Buscar = fetch,
+): Promise<{ produtos: ProdutoEncontrado[]; aviso: string | null }> {
+  let motivo = '';
+  try {
+    const produtos = await buscarPorNome(nome, buscar);
+    if (produtos.length) return { produtos, aviso: null };
+  } catch (erro) {
+    motivo = erro instanceof Error ? erro.message : String(erro);
+  }
+  const produtos = await buscarNoBuscapePorNome(nome, buscar);
+  return { produtos, aviso: motivo ? `A busca na Amazon não respondeu (${motivo}); a lista vem do Buscapé.` : null };
 }

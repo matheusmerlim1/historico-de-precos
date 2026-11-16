@@ -15,7 +15,7 @@
   /** Texto colado é link (com ou sem https://)? Senão, é o nome do produto. */
   function comoLink(texto) {
     if (/^https?:\/\//i.test(texto)) return texto;
-    if (/^(www\.)?(amazon\.com\.br|mercadoli(vre|bre)\.com\.br|amzn\.to|a\.co|meli\.la|produto\.mercadolivre\.com\.br)\//i.test(texto)) {
+    if (/^(www\.)?(amazon\.com\.br|mercadoli(vre|bre)\.com\.br|amzn\.to|a\.co|meli\.la|produto\.mercadolivre\.com\.br|buscape\.com\.br)\//i.test(texto)) {
       return `https://${texto}`;
     }
     return null;
@@ -87,6 +87,10 @@
     if (/(^|\.)mercadoli(vre|bre)\.com\.br$/.test(host)) {
       const m = (url.pathname + url.search).match(/MLB-?(\d{6,})/i);
       return m ? { loja: 'mercadolivre', id: 'MLB' + m[1] } : null;
+    }
+    if (/(^|\.)buscape\.com\.br$/.test(host)) {
+      const m = url.pathname.match(/^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/);
+      return m && !/^(search|lead|busca|ofertas|cupons|promocoes)$/.test(m[1]) ? { loja: 'buscape', id: m[2] } : null;
     }
     return null;
   }
@@ -179,7 +183,7 @@
     document.getElementById('painel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  const NOMES_LOJA = { amazon: 'Amazon', mercadolivre: 'Mercado Livre' };
+  const NOMES_LOJA = { amazon: 'Amazon', mercadolivre: 'Mercado Livre', buscape: 'Buscapé' };
   const CORES_LOJA = ['#5b2bd1', '#0a5fc4', '#c2410c', '#047857', '#b91c1c', '#7c3aed', '#0f766e', '#a21caf', '#1d4ed8', '#9a3412'];
   const MAX_CARTOES = 20;
 
@@ -232,7 +236,9 @@
     const contagem = new Map();
     for (const dados of arquivos) {
       if (!dados) continue;
-      const nomes = new Set((dados.pontos || []).map((p) => p.loja || NOMES_LOJA[dados.produto.loja] || dados.produto.loja));
+      // No produto do Buscapé a série sem loja é o menor preço do dia, não uma loja.
+      const pontos = (dados.pontos || []).filter((p) => p.loja || dados.produto.loja !== 'buscape');
+      const nomes = new Set(pontos.map((p) => p.loja || NOMES_LOJA[dados.produto.loja] || dados.produto.loja));
       for (const nome of nomes) contagem.set(nome, (contagem.get(nome) || 0) + 1);
     }
     ul.removeAttribute('aria-busy');
@@ -323,7 +329,7 @@
     // ?link=... consulta na hora (dá para compartilhar o endereço de uma consulta).
     campo.value = linkInicial;
     consultar(linkInicial, null);
-  } else if (inicial && /^(amazon|mercadolivre)_[A-Z0-9]+$/.test(inicial)) {
+  } else if (inicial && /^(amazon|mercadolivre|buscape)_[A-Za-z0-9-]+$/.test(inicial)) {
     // Abre direto o histórico salvo (rápido); quem quiser o mais novo consulta o link.
     lerSalvo(inicial).then((dados) => dados && desenhar(resultado, dados));
   }

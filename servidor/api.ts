@@ -2,10 +2,10 @@
 // devolve, linha a linha (NDJSON), o andamento e o resultado. A página chama
 //   GET /api/historico?link=<link do produto>
 // e, para quem digita o nome em vez do link, GET /api/historico?nome=<nome> devolve (JSON) os
-// produtos achados na busca da Amazon, para a pessoa escolher o certo.
+// produtos achados na busca da Amazon (ou do Buscapé, quando a Amazon recusa), para escolher o certo.
 // Empacotado em api/historico.js (ver README). Sem estado próprio: parte do histórico que o robô
 // diário já salvou em dados/ (lido da página no GitHub Pages) e soma o que achar agora.
-import { buscarPorNome, ehLinkCurto, identificarLink, resolverLink } from '../robo/motor.ts';
+import { buscarPorNomeComReserva, ehLinkCurto, identificarLink, resolverLink } from '../robo/motor.ts';
 import { montarHistorico } from '../robo/montar.ts';
 import type { ArquivoProduto } from '../robo/montar.ts';
 
@@ -40,11 +40,11 @@ export async function GET(req: Request): Promise<Response> {
     }
     try {
       const busca = (url: string, init?: RequestInit) => fetch(url, { ...init, signal: AbortSignal.timeout(20000) });
-      const produtos = await buscarPorNome(nome, busca);
+      const { produtos } = await buscarPorNomeComReserva(nome, busca);
       return Response.json({ produtos }, { headers: { ...cors, 'Cache-Control': 'public, max-age=1800' } });
     } catch (erro) {
       const motivo = erro instanceof Error ? erro.message : String(erro);
-      return Response.json({ erro: `Não consegui buscar na Amazon agora (${motivo}).` }, { status: 502, headers: cors });
+      return Response.json({ erro: `Não consegui buscar o produto agora (${motivo}).` }, { status: 502, headers: cors });
     }
   }
   const link = parametros.get('link')?.trim() ?? '';

@@ -5,8 +5,9 @@
     arquivo: 'Cópia antiga da página (Internet Archive)',
     loja: 'Lido na loja',
     telegram: 'Anunciado no Telegram',
+    comparador: 'Menor preço do dia no Buscapé',
   };
-  const NOMES_LOJA = { amazon: 'Amazon', mercadolivre: 'Mercado Livre' };
+  const NOMES_LOJA = { amazon: 'Amazon', mercadolivre: 'Mercado Livre', buscape: 'Menor preço (Buscapé)' };
 
   function esc(valor) {
     return String(valor ?? '')
@@ -193,9 +194,11 @@
   }
 
   /** O menor preço visto nos últimos 3 dias entre as lojas (para dizer onde está mais barato). */
-  function maisBaratoAgora(todas) {
+  function maisBaratoAgora(todas, produto) {
     const limite = Date.now() - 3 * 86400000;
-    const recentes = todas.filter((s) => Date.parse(s.ultimo.data) >= limite);
+    // No produto do Buscapé a série principal é o menor preço do dia, não uma loja.
+    const lojas = produto.loja === 'buscape' ? todas.filter((s) => s.chave) : todas;
+    const recentes = lojas.filter((s) => Date.parse(s.ultimo.data) >= limite);
     if (recentes.length < 2) return '';
     const melhor = recentes.reduce((a, b) => (b.ultimo.precoCentavos < a.ultimo.precoCentavos ? b : a));
     return `Hoje o menor preço entre as ${recentes.length} lojas é ${reais(melhor.ultimo.precoCentavos)}, na ${melhor.nome}.`;
@@ -215,17 +218,18 @@
 
     const cartoes = resumo && resumo.quantidade
       ? `<dl class="hp-cartoes">
-          <div><dt>Último preço na ${esc(nomePrincipal)}</dt><dd>${esc(reais(resumo.atual.precoCentavos))}</dd><dd class="hp-sub">${esc(dataCurta(resumo.atual.data))}</dd></div>
+          <div><dt>${produto.loja === 'buscape' ? 'Menor preço hoje no Buscapé' : `Último preço na ${esc(nomePrincipal)}`}</dt><dd>${esc(reais(resumo.atual.precoCentavos))}</dd><dd class="hp-sub">${esc(dataCurta(resumo.atual.data))}</dd></div>
           <div><dt>Menor</dt><dd>${esc(reais(resumo.menor.precoCentavos))}</dd><dd class="hp-sub">${esc(dataCurta(resumo.menor.data))}</dd></div>
           <div><dt>Maior</dt><dd>${esc(reais(resumo.maior.precoCentavos))}</dd><dd class="hp-sub">${esc(dataCurta(resumo.maior.data))}</dd></div>
           <div><dt>Média</dt><dd>${esc(reais(resumo.mediaCentavos))}</dd><dd class="hp-sub">${resumo.quantidade} registros desde ${esc(dataCurta(resumo.primeiraData))}</dd></div>
         </dl>`
       : '';
-    const barato = maisBaratoAgora(todas);
+    const barato = maisBaratoAgora(todas, produto);
+    const doBuscape = produto.loja === 'buscape';
     const links = [
-      `${esc(nomePrincipal)} · código ${esc(produto.id)}`,
-      url ? `<a href="${esc(url)}" target="_blank" rel="noopener">abrir na loja${novaAba}</a>` : '',
-      comparador ? `<a href="${esc(comparador)}" target="_blank" rel="noopener">outras lojas no Buscapé${novaAba}</a>` : '',
+      doBuscape ? 'Preço em várias lojas, pelo Buscapé' : `${esc(nomePrincipal)} · código ${esc(produto.id)}`,
+      url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${doBuscape ? 'abrir no Buscapé' : 'abrir na loja'}${novaAba}</a>` : '',
+      comparador && comparador !== url ? `<a href="${esc(comparador)}" target="_blank" rel="noopener">outras lojas no Buscapé${novaAba}</a>` : '',
     ].filter(Boolean);
 
     container.innerHTML = `
@@ -286,14 +290,18 @@
       </button></li>`;
     };
     const grupo = (titulo, lista, origem) =>
-      lista.length ? `<h3 class="hp-subtitulo">${titulo}</h3><ul class="hp-achados">${lista.map((p) => item(p, origem)).join('')}</ul>` : '';
+      lista.length ? `<h3 class="hp-subtitulo">${titulo}</h3><ul class="hp-achados">${lista.map((p) => item(p, origem(p))).join('')}</ul>` : '';
+    const daAmazon = produtos.filter((p) => p.fonte !== 'buscape');
+    const doBuscape = produtos.filter((p) => p.fonte === 'buscape');
+    const entreLojas = (p) => (p.lojas > 1 ? `menor preço entre ${p.lojas} lojas` : 'menor preço no Buscapé');
     const vazio = !produtos.length && !acompanhados.length && !erro;
     container.innerHTML = `
       <section class="hp-resultado hp-busca">
         <h2 class="hp-titulo">Produtos encontrados para “${esc(nome)}”</h2>
         <p class="hp-loja">Escolha o produto certo (modelo, capacidade e cor) para ver o histórico de preço.</p>
-        ${grupo('Já acompanhados', acompanhados, 'histórico salvo · último preço')}
-        ${grupo('Na Amazon hoje', produtos, 'preço hoje na Amazon')}
+        ${grupo('Já acompanhados', acompanhados, () => 'histórico salvo · último preço')}
+        ${grupo('Na Amazon hoje', daAmazon, () => 'preço hoje na Amazon')}
+        ${grupo('No Buscapé hoje', doBuscape, entreLojas)}
         ${erro ? `<ul class="hp-avisos"><li>${esc(erro)}</li></ul>` : ''}
         ${vazio ? '<p>Nada encontrado. Tente com menos palavras (marca e modelo) ou cole o link do produto.</p>' : ''}
       </section>`;

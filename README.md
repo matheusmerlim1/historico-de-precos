@@ -38,10 +38,15 @@ Depois disso a Vercel publica sozinha a cada push.
 
 ## Busca pelo nome
 
-Quem digita o nome em vez do link recebe os produtos achados na busca da Amazon (`?nome=`) e os já
-acompanhados que combinam, e escolhe o certo. A Amazon às vezes responde com uma verificação
-anti-robô (`bm-verify`); a página avisa e sugere colar o link. O Mercado Livre não entra na busca
-pelo nome porque pede verificação de conta a robôs.
+Quem digita o nome em vez do link recebe os produtos achados (`?nome=`) e os já acompanhados que
+combinam, e escolhe o certo. O servidor tenta a busca da Amazon; vindo da Vercel ela costuma
+recusar (503 ou verificação anti-robô `bm-verify`), e aí a lista vem da busca do Buscapé.
+
+Produto escolhido no Buscapé (link `buscape.com.br/<categoria>/<produto>`, chave `buscape_<produto>`):
+a série principal é o menor preço de cada dia que o próprio Buscapé guarda (bloco `priceHistory`
+da página, uns 40 dias); as outras séries são as lojas, hoje e nas cópias antigas da página do
+Buscapé. O robô diário atualiza esses produtos do mesmo jeito. O Mercado Livre não entra na busca
+pelo nome porque pede verificação de conta a robôs (e a API dele agora exige login).
 
 ## Mexer no código
 

@@ -34,6 +34,11 @@ function identificarLink(texto) {
     const limpa = `${url.origin}${url.pathname}`;
     return { loja: "mercadolivre", id: `MLB${m[1]}`, url: limpa };
   }
+  if (/(^|\.)buscape\.com\.br$/.test(host)) {
+    const m = url.pathname.match(/^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/);
+    if (!m || /^(search|lead|busca|ofertas|cupons|promocoes)$/.test(m[1])) return null;
+    return { loja: "buscape", id: m[2], url: `https://www.buscape.com.br/${m[1]}/${m[2]}` };
+  }
   return null;
 }
 function ehLinkCurto(texto) {
@@ -492,7 +497,9 @@ function lerOfertasDoBuscape(html) {
 }
 var NOME_DA_LOJA = {
   amazon: /^amazon(\.com\.br)?$/i,
-  mercadolivre: /^mercado\s*livre$/i
+  mercadolivre: /^mercado\s*livre$/i,
+  buscape: /^$/
+  // produto do Buscapé: toda oferta é de uma loja
 };
 function pontosDasOfertas(produto, ofertas, data, fonte, link) {
   return ofertas.map((o) => ({
@@ -615,6 +622,76 @@ async function buscarPorNome(nome, buscar = fetch, maximo = 8) {
   }
   return encontrados.map((p, ordem) => ({ p, ordem, nota: notaDaBusca(nome, p.titulo) })).filter((x) => x.nota >= 0.5 && !ehAcessorioNaoPedido(nome, x.p.titulo)).sort((a, b) => b.nota - a.nota || a.ordem - b.ordem).slice(0, maximo).map((x) => x.p);
 }
+function lerTituloDoBuscape(html) {
+  const bruto = html.match(/<title>([^<]*)<\/title>/)?.[1];
+  if (!bruto) return null;
+  const titulo = decodificar(bruto).replace(/\s*(em promoção é no buscapé|\|\s*buscapé|- buscapé)\s*$/i, "").trim();
+  return titulo || null;
+}
+function lerHistoricoDoBuscape(html, link) {
+  const dados = dadosNext(html);
+  const porProduto = dados?.props?.initialReduxState?.priceHistory?.priceHistory ?? {};
+  const pontos = [];
+  for (const { days } of Object.values(porProduto)) {
+    for (const dia of days ?? []) {
+      if (!dia.date || !/^\d{4}-\d{2}-\d{2}$/.test(dia.date) || typeof dia.price !== "number" || !(dia.price > 0)) continue;
+      pontos.push({
+        data: `${dia.date}T12:00:00Z`,
+        precoCentavos: Math.round(dia.price * 100),
+        precoDeCentavos: null,
+        fonte: "comparador",
+        link
+      });
+    }
+  }
+  return pontos.sort((a, b) => a.data.localeCompare(b.data));
+}
+async function lerPaginaDoBuscape(produto, buscar = fetch) {
+  try {
+    const resposta = await buscar(produto.url, { headers: NAVEGADOR });
+    if (!resposta.ok) return { titulo: null, pontos: [] };
+    const html = await resposta.text();
+    return { titulo: lerTituloDoBuscape(html), pontos: lerHistoricoDoBuscape(html, produto.url) };
+  } catch {
+    return { titulo: null, pontos: [] };
+  }
+}
+function lerBuscaDoBuscape(html, nome, maximo = 8) {
+  const dados = dadosNext(html);
+  const resultados = dados?.props?.initialReduxState?.hits?.hits ?? [];
+  const lista = [];
+  const vistos = /* @__PURE__ */ new Set();
+  resultados.forEach((r) => {
+    if (r.type !== "product" || !r.name || !r.url || !/^\/[a-z0-9-]+\/[a-z0-9-]+$/.test(r.url)) return;
+    if (vistos.has(r.url) || notaDaBusca(nome, r.name) < 0.5 || ehAcessorioNaoPedido(nome, r.name)) return;
+    vistos.add(r.url);
+    lista.push({
+      titulo: r.name,
+      link: `https://www.buscape.com.br${r.url}`,
+      precoCentavos: typeof r.price === "number" && r.price > 0 ? Math.round(r.price * 100) : null,
+      imagem: typeof r.image === "string" && /^https:\/\//.test(r.image) ? r.image : null,
+      fonte: "buscape",
+      ...typeof r.storeCount === "number" ? { lojas: r.storeCount } : {}
+    });
+  });
+  return lista.map((p, ordem) => ({ p, ordem, nota: notaDaBusca(nome, p.titulo) })).sort((a, b) => b.nota - a.nota || a.ordem - b.ordem).slice(0, maximo).map((x) => x.p);
+}
+async function buscarNoBuscapePorNome(nome, buscar = fetch) {
+  const resposta = await buscar(`https://www.buscape.com.br/search?q=${encodeURIComponent(nome.trim())}`, { headers: NAVEGADOR });
+  if (!resposta.ok) throw new Error(`o Buscap\xE9 respondeu ${resposta.status}`);
+  return lerBuscaDoBuscape(await resposta.text(), nome);
+}
+async function buscarPorNomeComReserva(nome, buscar = fetch) {
+  let motivo = "";
+  try {
+    const produtos2 = await buscarPorNome(nome, buscar);
+    if (produtos2.length) return { produtos: produtos2, aviso: null };
+  } catch (erro) {
+    motivo = erro instanceof Error ? erro.message : String(erro);
+  }
+  const produtos = await buscarNoBuscapePorNome(nome, buscar);
+  return { produtos, aviso: motivo ? `A busca na Amazon n\xE3o respondeu (${motivo}); a lista vem do Buscap\xE9.` : null };
+}
 
 // robo/montar.ts
 var FOLGA_FINAL_MS = 6e3;
@@ -636,6 +713,7 @@ async function montarHistorico(produto, antes, opcoes) {
     return fetch(url, { ...init, signal: AbortSignal.timeout(limite) });
   };
   const pausa = opcoes.pausaMs != null ? { pausaMs: opcoes.pausaMs } : {};
+  if (produto.loja === "buscape") return montarDoBuscape(produto, antes, opcoes, { buscar, avisar, semTempo, pausa, agora });
   avisar("Lendo o pre\xE7o de hoje na loja...");
   const hoje = await lerPrecoAtual(produto, buscar);
   if (!hoje.ponto) avisos.push("A loja n\xE3o mostrou o pre\xE7o de hoje (\xE0s vezes ela pede captcha).");
@@ -705,6 +783,48 @@ async function montarHistorico(produto, antes, opcoes) {
   };
   return { dados, avisos };
 }
+async function montarDoBuscape(produto, antes, opcoes, { buscar, avisar, semTempo, pausa, agora }) {
+  const avisos = [];
+  avisar("Lendo o hist\xF3rico de pre\xE7o do Buscap\xE9...");
+  const pagina = await lerPaginaDoBuscape(produto, buscar);
+  if (!pagina.pontos.length) avisos.push("O Buscap\xE9 n\xE3o mostrou o hist\xF3rico de pre\xE7o agora; tente de novo mais tarde.");
+  const titulo = pagina.titulo ?? antes?.titulo ?? null;
+  const comparador = { nome: titulo ?? produto.id, url: produto.url };
+  const lidas = [];
+  let outras = [];
+  if (!semTempo()) {
+    avisar("Lendo o pre\xE7o de cada loja...");
+    const r = await buscarOutrasLojas(produto, titulo ?? produto.id, {
+      buscar,
+      pagina: comparador,
+      jaLidas: new Set(antes?.copiasComparadorLidas ?? []),
+      maximoDeCopias: Math.max(opcoes.copias, opcoes.copiasComparador),
+      parar: semTempo,
+      ...pausa,
+      aoAvancar: (n, total) => avisar(`Lendo pre\xE7os antigos das lojas: ${n} de ${total}...`)
+    });
+    outras = r.pontos;
+    lidas.push(...r.lidas);
+    if (r.bloqueado) avisos.push("O Internet Archive pediu uma pausa; o resto das c\xF3pias antigas fica para depois.");
+  }
+  if (semTempo() && opcoes.prazoMs != null) {
+    avisos.push("O Internet Archive estava lento; mostrei o que deu tempo de ler. Consulte de novo mais tarde para ver mais.");
+  }
+  const pontos = juntarPontos(antes?.pontos ?? [], pagina.pontos, outras);
+  const dados = {
+    produto,
+    titulo,
+    criadoEm: antes?.criadoEm ?? agora,
+    atualizadoEm: agora,
+    copiasLidas: antes?.copiasLidas ?? [],
+    copiasRestantes: 0,
+    comparador,
+    copiasComparadorLidas: [.../* @__PURE__ */ new Set([...antes?.copiasComparadorLidas ?? [], ...lidas])].sort(),
+    pontos,
+    resumo: resumir(principais(pontos))
+  };
+  return { dados, avisos };
+}
 
 // servidor/api.ts
 var PAGINA = "https://matheusmerlim1.github.io/historico-de-precos";
@@ -733,11 +853,11 @@ async function GET(req) {
     }
     try {
       const busca = (url, init) => fetch(url, { ...init, signal: AbortSignal.timeout(2e4) });
-      const produtos = await buscarPorNome(nome, busca);
+      const { produtos } = await buscarPorNomeComReserva(nome, busca);
       return Response.json({ produtos }, { headers: { ...cors, "Cache-Control": "public, max-age=1800" } });
     } catch (erro) {
       const motivo = erro instanceof Error ? erro.message : String(erro);
-      return Response.json({ erro: `N\xE3o consegui buscar na Amazon agora (${motivo}).` }, { status: 502, headers: cors });
+      return Response.json({ erro: `N\xE3o consegui buscar o produto agora (${motivo}).` }, { status: 502, headers: cors });
     }
   }
   const link = parametros.get("link")?.trim() ?? "";

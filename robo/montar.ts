@@ -9,6 +9,7 @@ import {
   buscarHistoricoArquivado,
   buscarOutrasLojas,
   juntarPontos,
+  lerPaginaDoBuscape,
   lerPrecoAtual,
   resumir,
 } from './motor.ts';
@@ -64,6 +65,7 @@ export async function montarHistorico(
     return fetch(url, { ...init, signal: AbortSignal.timeout(limite) });
   };
   const pausa = opcoes.pausaMs != null ? { pausaMs: opcoes.pausaMs } : {};
+  if (produto.loja === 'buscape') return montarDoBuscape(produto, antes, opcoes, { buscar, avisar, semTempo, pausa, agora });
 
   avisar('Lendo o preço de hoje na loja...');
   const hoje = await lerPrecoAtual(produto, buscar);
@@ -136,6 +138,68 @@ export async function montarHistorico(
     copiasComparadorLidas: [...new Set([...(antes?.copiasComparadorLidas ?? []), ...lidasComparador])].sort(),
     pontos,
     // O resumo (menor, maior, média, veredito) é da loja do link; as outras lojas têm a tabela própria.
+    resumo: resumir(principais(pontos)),
+  };
+  return { dados, avisos };
+}
+
+interface Contexto {
+  buscar: Buscar;
+  avisar: (etapa: string) => void;
+  semTempo: () => boolean;
+  pausa: { pausaMs?: number };
+  agora: string;
+}
+
+/**
+ * Produto do Buscapé (escolhido na busca pelo nome): a série principal é o menor preço de cada dia
+ * que o próprio Buscapé guarda; as outras são as lojas, hoje e nas cópias antigas da página.
+ */
+async function montarDoBuscape(
+  produto: ProdutoLink,
+  antes: ArquivoProduto | null,
+  opcoes: OpcoesMontagem,
+  { buscar, avisar, semTempo, pausa, agora }: Contexto,
+): Promise<{ dados: ArquivoProduto; avisos: string[] }> {
+  const avisos: string[] = [];
+  avisar('Lendo o histórico de preço do Buscapé...');
+  const pagina = await lerPaginaDoBuscape(produto, buscar);
+  if (!pagina.pontos.length) avisos.push('O Buscapé não mostrou o histórico de preço agora; tente de novo mais tarde.');
+  const titulo = pagina.titulo ?? antes?.titulo ?? null;
+  const comparador = { nome: titulo ?? produto.id, url: produto.url };
+
+  const lidas: string[] = [];
+  let outras: PontoDePreco[] = [];
+  if (!semTempo()) {
+    avisar('Lendo o preço de cada loja...');
+    const r = await buscarOutrasLojas(produto, titulo ?? produto.id, {
+      buscar,
+      pagina: comparador,
+      jaLidas: new Set(antes?.copiasComparadorLidas ?? []),
+      maximoDeCopias: Math.max(opcoes.copias, opcoes.copiasComparador),
+      parar: semTempo,
+      ...pausa,
+      aoAvancar: (n, total) => avisar(`Lendo preços antigos das lojas: ${n} de ${total}...`),
+    });
+    outras = r.pontos;
+    lidas.push(...r.lidas);
+    if (r.bloqueado) avisos.push('O Internet Archive pediu uma pausa; o resto das cópias antigas fica para depois.');
+  }
+  if (semTempo() && opcoes.prazoMs != null) {
+    avisos.push('O Internet Archive estava lento; mostrei o que deu tempo de ler. Consulte de novo mais tarde para ver mais.');
+  }
+
+  const pontos = juntarPontos(antes?.pontos ?? [], pagina.pontos, outras);
+  const dados: ArquivoProduto = {
+    produto,
+    titulo,
+    criadoEm: antes?.criadoEm ?? agora,
+    atualizadoEm: agora,
+    copiasLidas: antes?.copiasLidas ?? [],
+    copiasRestantes: 0,
+    comparador,
+    copiasComparadorLidas: [...new Set([...(antes?.copiasComparadorLidas ?? []), ...lidas])].sort(),
+    pontos,
     resumo: resumir(principais(pontos)),
   };
   return { dados, avisos };
