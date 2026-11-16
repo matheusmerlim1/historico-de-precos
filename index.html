@@ -5,56 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Histórico de preço — Amazon e Mercado Livre</title>
     <meta name="description" content="Cole o link de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo." />
-    <link rel="stylesheet" href="estilo.css?v=7" />
-    <link rel="stylesheet" href="historico-tela.css?v=7" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" />
+    <link rel="stylesheet" href="estilo.css?v=8" />
+    <link rel="stylesheet" href="historico-tela.css?v=8" />
   </head>
   <body>
-    <main class="pagina">
-      <h1>Histórico de preço</h1>
-      <p class="chamada">
-        Cole o link de um produto da Amazon ou do Mercado Livre e veja como o preço mudou ao longo do tempo,
-        nessa loja e nas outras que vendem o mesmo produto, para saber se a promoção é de verdade.
-      </p>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-      <section class="bloco" aria-labelledby="titulo-busca">
-        <h2 id="titulo-busca">Consultar um produto</h2>
-        <form id="form-busca" novalidate>
-          <label for="link">Link do produto</label>
-          <div class="linha-busca">
-            <input type="url" id="link" name="link" placeholder="https://www.amazon.com.br/dp/..." autocomplete="off" required />
-            <button type="submit">Ver histórico</button>
-          </div>
-          <p class="dica">Aceita links da amazon.com.br e do mercadolivre.com.br, inclusive os curtos (amzn.to). A primeira consulta de um produto leva até 1 minuto.</p>
+    <header class="topo">
+      <div class="topo-linha">
+        <a class="marca" href="./">
+          <svg class="marca-icone" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="9" />
+            <path d="M7 11l6 6 4-4 8 8" />
+            <path d="M19 21h6v-6" />
+          </svg>
+          <span class="marca-nome">histórico<b>de preço</b></span>
+        </a>
+
+        <form id="form-busca" class="busca" role="search" novalidate>
+          <label for="link" class="sr">Link do produto</label>
+          <input type="url" id="link" name="link" placeholder="Cole o link de um produto da Amazon ou do Mercado Livre" autocomplete="off" required />
+          <button type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4.2-4.2" /></svg>
+            <span class="sr">Ver histórico</span>
+          </button>
         </form>
+
+        <a class="topo-acao" href="#titulo-lista">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9" /><path d="M10 20a2.2 2.2 0 0 0 4 0" /></svg>
+          <span>Acompanhados</span>
+        </a>
+      </div>
+
+      <nav class="topo-menu" aria-label="Seções da página">
+        <a href="#titulo-lojas">Lojas comparadas</a>
+        <a href="#titulo-lista">Produtos acompanhados</a>
+        <a href="#titulo-fontes">Como funciona</a>
+        <a href="https://github.com/matheusmerlim1/historico-de-precos">Código no GitHub</a>
+      </nav>
+    </header>
+
+    <main id="conteudo">
+      <section class="banner" aria-labelledby="titulo-busca">
+        <div class="banner-texto">
+          <h1 id="titulo-busca">A promoção é de verdade?</h1>
+          <p>
+            Cole o link do produto na busca lá em cima e veja como o preço mudou ao longo do tempo,
+            nessa loja e nas outras que vendem o mesmo produto.
+          </p>
+          <p class="banner-dica">Aceita amazon.com.br e mercadolivre.com.br, inclusive links curtos (amzn.to). A primeira consulta de um produto leva até 1 minuto.</p>
+          <a class="banner-botao" href="#titulo-lista">Ver produtos acompanhados</a>
+        </div>
+        <svg class="banner-arte" viewBox="0 0 320 200" aria-hidden="true">
+          <rect class="arte-cartao" x="8" y="8" width="304" height="184" rx="18" />
+          <path class="arte-grade" d="M32 60h256M32 100h256M32 140h256" />
+          <path class="arte-area" d="M32 70 L80 62 L120 88 L160 80 L200 118 L240 110 L288 150 L288 170 L32 170 Z" />
+          <path class="arte-linha" d="M32 70 L80 62 L120 88 L160 80 L200 118 L240 110 L288 150" />
+          <circle class="arte-ponto" cx="288" cy="150" r="7" />
+          <rect class="arte-selo" x="200" y="24" width="92" height="30" rx="15" />
+          <text class="arte-selo-texto" x="246" y="44" text-anchor="middle">−22%</text>
+        </svg>
+      </section>
+
+      <section id="painel" class="painel" aria-label="Resultado da consulta">
         <p id="status" role="status"></p>
         <div id="resultado"></div>
       </section>
 
-      <section class="bloco" aria-labelledby="titulo-lista">
-        <h2 id="titulo-lista">Produtos já acompanhados</h2>
-        <div id="lista">Carregando…</div>
-      </section>
-
-      <section class="bloco" aria-labelledby="titulo-fontes">
-        <h2 id="titulo-fontes">De onde vêm os preços</h2>
-        <ul class="fontes">
-          <li><strong>Cópias antigas da página</strong>: o Internet Archive guarda versões da página do produto em várias datas; o site lê o preço de cada uma.</li>
-          <li><strong>Outras lojas</strong>: o site acha o mesmo produto (mesmo modelo e capacidade) no comparador Buscapé e lê o preço de cada loja, hoje e nas cópias antigas.</li>
-          <li><strong>Conferência diária</strong>: os produtos da lista abaixo têm o preço lido todo dia, então o gráfico continua crescendo.</li>
+      <section class="faixa" aria-labelledby="titulo-lojas">
+        <div class="faixa-cabeca">
+          <h2 id="titulo-lojas">Lojas comparadas nos produtos acompanhados</h2>
+        </div>
+        <ul id="lojas" class="lojas" aria-busy="true" tabindex="0" aria-labelledby="titulo-lojas">
+          <li class="loja esqueleto" aria-hidden="true"><span class="loja-bola"></span></li>
+          <li class="loja esqueleto" aria-hidden="true"><span class="loja-bola"></span></li>
+          <li class="loja esqueleto" aria-hidden="true"><span class="loja-bola"></span></li>
+          <li class="loja esqueleto" aria-hidden="true"><span class="loja-bola"></span></li>
         </ul>
       </section>
 
-      <footer>
-        <p>
-          Os preços são lidos de páginas públicas e podem ter atraso ou erro; confira sempre na loja antes de comprar.
-          Código no <a href="https://github.com/matheusmerlim1/historico-de-precos">GitHub</a>.
-        </p>
-      </footer>
+      <section class="faixa" aria-labelledby="titulo-lista">
+        <div class="faixa-cabeca">
+          <h2 id="titulo-lista">Produtos acompanhados</h2>
+          <div class="setas" hidden>
+            <button type="button" class="seta" data-direcao="-1" aria-label="Produtos anteriores" aria-controls="lista">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+            </button>
+            <button type="button" class="seta" data-direcao="1" aria-label="Próximos produtos" aria-controls="lista">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+            </button>
+          </div>
+        </div>
+        <p class="faixa-sub">O preço destes produtos é lido todo dia; clique para abrir o histórico completo.</p>
+        <div id="lista" class="vitrine">Carregando…</div>
+      </section>
+
+      <section class="faixa como" aria-labelledby="titulo-fontes">
+        <div class="faixa-cabeca">
+          <h2 id="titulo-fontes">De onde vêm os preços</h2>
+        </div>
+        <dl class="fontes">
+          <div>
+            <dt>Cópias antigas da página</dt>
+            <dd>O Internet Archive guarda versões da página do produto em várias datas; o site lê o preço de cada uma.</dd>
+          </div>
+          <div>
+            <dt>Outras lojas</dt>
+            <dd>O site acha o mesmo produto (mesmo modelo e capacidade) no comparador Buscapé e lê o preço de cada loja, hoje e nas cópias antigas.</dd>
+          </div>
+          <div>
+            <dt>Conferência diária</dt>
+            <dd>Os produtos acompanhados têm o preço lido todo dia, então o gráfico continua crescendo.</dd>
+          </div>
+        </dl>
+      </section>
     </main>
 
-    <script src="config.js?v=7"></script>
-    <script src="historico-tela.js?v=7"></script>
-    <script src="pagina.js?v=7"></script>
+    <footer class="rodape">
+      <p>
+        Os preços são lidos de páginas públicas e podem ter atraso ou erro; confira sempre na loja antes de comprar.
+        Código no <a href="https://github.com/matheusmerlim1/historico-de-precos">GitHub</a>.
+      </p>
+    </footer>
+
+    <script src="config.js?v=8"></script>
+    <script src="historico-tela.js?v=8"></script>
+    <script src="pagina.js?v=8"></script>
 <!-- === Botao de volta ao portfolio - cole antes de </body> === -->
 <nav aria-label="Portf&oacute;lio">
 <a id="mr-portfolio-btn" href="https://matheusmerlim1.github.io/" target="_blank" rel="noopener"
