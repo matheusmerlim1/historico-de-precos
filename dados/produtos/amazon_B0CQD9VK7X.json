@@ -6,7 +6,7 @@
  },
  "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
  "criadoEm": "2026-11-14T16:35:08.592Z",
- "atualizadoEm": "2026-11-16T19:41:21.707Z",
+ "atualizadoEm": "2026-11-17T18:39:21.728Z",
  "copiasLidas": [
   "20240211093757",
   "20240623131728",
@@ -16,10 +16,12 @@
   "20240925184342",
   "20241004023100",
   "20241009010320",
+  "20241203175411",
   "20241207142828",
   "20250113201327",
   "20250311201827",
   "20250322131215",
+  "20250406192259",
   "20250408182148",
   "20250411204448",
   "20250412215419",
@@ -36,6 +38,7 @@
   "20251006205210",
   "20251007050553",
   "20251008172727",
+  "20251008173930",
   "20251009134909",
   "20251010173556",
   "20251010212437",
@@ -45,6 +48,7 @@
   "20251030152000",
   "20251103093041",
   "20251109134642",
+  "20251110123234",
   "20251111043643",
   "20251112045709",
   "20251115005631",
@@ -58,13 +62,14 @@
   "20260502141316",
   "20260506072713",
   "20260511164433",
+  "20260702014759",
   "20260718212642",
   "20260803175222",
   "20260815175611",
   "20260909083034",
   "20261004180129"
  ],
- "copiasRestantes": 71,
+ "copiasRestantes": 38,
  "comparador": {
   "nome": "Celular Samsung Galaxy S24 Ultra 5G 256GB 12 GB",
   "url": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
@@ -178,6 +183,13 @@
    "loja": "Extra"
   },
   {
+   "data": "2024-12-03T17:54:11Z",
+   "precoCentavos": 629900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241203175411/https://www.amazon.com.br/gp/product/B0CQD9VK7X?&linkCode=sl1&tag=pechinchas04-20&linkId=f0e27c57eae6559f5cd49f382d689b3b&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
    "data": "2024-12-07T14:28:28Z",
    "precoCentavos": 620017,
    "precoDeCentavos": null,
@@ -197,6 +209,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250311201827/https://www.amazon.com.br/dp/B0CQD9VK7X?language=pt_BR&linkCode=ogi&psc=1&tag=rstone03-20&th=1"
+  },
+  {
+   "data": "2025-04-06T19:22:59Z",
+   "precoCentavos": 649890,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250406192259/https://www.amazon.com.br/gp/product/B0CQD9VK7X?tag=ofertanamao06-20&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
    "data": "2025-04-08T18:21:48Z",
@@ -269,6 +288,13 @@
    "link": "https://web.archive.org/web/20251006205210/https://www.amazon.com.br/dp/B0CQD9VK7X?tag=medaumdesco0e-20"
   },
   {
+   "data": "2025-10-08T17:39:30Z",
+   "precoCentavos": 499900,
+   "precoDeCentavos": 549900,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251008173930/https://www.amazon.com.br/gp/product/B0CQD9VK7X?th=1&linkCode=sl1&tag=promotrem-20&linkId=19b776afb3dfb9c00c4e45e67f247499&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
    "data": "2025-10-09T13:49:09Z",
    "precoCentavos": 499900,
    "precoDeCentavos": null,
@@ -323,6 +349,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20251109134642/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl1&tag=urutelegram-20&linkId=ed715d66541022a37e6eab5d80c65375&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2025-11-10T12:32:34Z",
+   "precoCentavos": 479876,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20251110123234/https://www.amazon.com.br/gp/product/B0CQD9VK7X?smid=A1ZZFT5FULY4LN&th=1&linkCode=sl1&tag=achadosvertao-20&linkId=550e4bea5d9db9c264d7e039aab4aa03&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
    "data": "2025-11-11T04:36:43Z",
@@ -460,6 +493,13 @@
    "loja": "KaBuM!"
   },
   {
+   "data": "2026-07-02T01:47:59Z",
+   "precoCentavos": 449910,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260702014759/https://www.amazon.com.br/gp/product/B0CQD9VK7X?smid=A1ZZFT5FULY4LN&th=1"
+  },
+  {
    "data": "2026-07-18T21:26:42Z",
    "precoCentavos": 539900,
    "precoDeCentavos": null,
@@ -516,10 +556,25 @@
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
+  },
+  {
+   "data": "2026-11-17T18:39:22.613Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-17T18:39:22.613Z",
+   "precoCentavos": 579398,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
   }
  ],
  "resumo": {
-  "quantidade": 41,
+  "quantidade": 47,
   "menor": {
    "data": "2026-07-19T06:42:40Z",
    "precoCentavos": 411916,
@@ -534,9 +589,9 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20240211093757/https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
-  "mediaCentavos": 544871,
+  "mediaCentavos": 545289,
   "atual": {
-   "data": "2026-11-16T19:41:23.175Z",
+   "data": "2026-11-17T18:39:22.613Z",
    "precoCentavos": 579398,
    "precoDeCentavos": null,
    "fonte": "loja",
