@@ -6,7 +6,7 @@
  },
  "titulo": "Smartphone Samsung Galaxy S24 Ultra, Galaxy AI, Selfie de 12MP, Tela de 6.8\" 1-120Hz, 256GB, 12GB RAM - Titânio Preto",
  "criadoEm": "2026-11-14T16:35:08.592Z",
- "atualizadoEm": "2026-11-17T18:39:21.728Z",
+ "atualizadoEm": "2026-11-18T18:10:35.846Z",
  "copiasLidas": [
   "20240211093757",
   "20240623131728",
@@ -15,6 +15,7 @@
   "20240923155325",
   "20240925184342",
   "20241004023100",
+  "20241005002133",
   "20241009010320",
   "20241203175411",
   "20241207142828",
@@ -26,6 +27,7 @@
   "20250411204448",
   "20250412215419",
   "20250413045346",
+  "20250413055702",
   "20250422091405",
   "20250425104841",
   "20250513032110",
@@ -42,6 +44,7 @@
   "20251009134909",
   "20251010173556",
   "20251010212437",
+  "20251011181135",
   "20251014185743",
   "20251018034841",
   "20251026070425",
@@ -52,6 +55,7 @@
   "20251111043643",
   "20251112045709",
   "20251115005631",
+  "20251115014731",
   "20251116101325",
   "20251118121253",
   "20251118140446",
@@ -60,6 +64,7 @@
   "20260309173747",
   "20260314010312",
   "20260502141316",
+  "20260505231351",
   "20260506072713",
   "20260511164433",
   "20260702014759",
@@ -69,7 +74,7 @@
   "20260909083034",
   "20261004180129"
  ],
- "copiasRestantes": 38,
+ "copiasRestantes": 83,
  "comparador": {
   "nome": "Celular Samsung Galaxy S24 Ultra 5G 256GB 12 GB",
   "url": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
@@ -77,10 +82,13 @@
  "copiasComparadorLidas": [
   "20241102124529",
   "20241104205638",
+  "20241109074537",
   "20251204052229",
   "20251212160611",
+  "20260211033540",
   "20260520195027",
-  "20260719064240"
+  "20260719064240",
+  "20260722234419"
  ],
  "pontos": [
   {
@@ -183,6 +191,45 @@
    "loja": "Extra"
   },
   {
+   "data": "2024-11-09T07:45:37Z",
+   "precoCentavos": 689700,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241109074537/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=331",
+   "loja": "Casas Bahia"
+  },
+  {
+   "data": "2024-11-09T07:45:37Z",
+   "precoCentavos": 689850,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241109074537/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=331",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2024-11-09T07:45:37Z",
+   "precoCentavos": 699900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241109074537/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=331",
+   "loja": "Ponto"
+  },
+  {
+   "data": "2024-11-09T07:45:37Z",
+   "precoCentavos": 699900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241109074537/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=331",
+   "loja": "Extra"
+  },
+  {
+   "data": "2024-11-09T07:45:37Z",
+   "precoCentavos": 689850,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20241109074537/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=331"
+  },
+  {
    "data": "2024-12-03T17:54:11Z",
    "precoCentavos": 629900,
    "precoDeCentavos": null,
@@ -244,6 +291,13 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250413045346/https://www.amazon.com.br/dp/B0CQD9VK7X?&linkCode=sl1&tag=promopinke02-20&linkId=1b09464ee6bf527c7604be43b0eb970f&language=pt_BR&ref_=as_li_ss_tl"
+  },
+  {
+   "data": "2025-04-13T05:57:02Z",
+   "precoCentavos": 582390,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20250413055702/https://www.amazon.com.br/gp/product/B0CQD9VK7X?smid=A1ZZFT5FULY4LN&ascsubtag=srctok-11df29f86990d589&btn_ref=srctok-11df29f86990d589&th=1&linkCode=sl1&tag=joaopsx0f-20&linkId=ff6dd04759af1e0315d47fd9ded9a1f2&language=pt_BR&ref_=as_li_ss_tl"
   },
   {
    "data": "2025-04-22T09:14:05Z",
@@ -449,6 +503,45 @@
    "loja": "Magazine Luiza"
   },
   {
+   "data": "2026-02-11T03:35:40Z",
+   "precoCentavos": 519656,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260211033540/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=celulares%2Bcamera%2B200",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-02-11T03:35:40Z",
+   "precoCentavos": 599900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260211033540/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=celulares%2Bcamera%2B200",
+   "loja": "Casas Bahia"
+  },
+  {
+   "data": "2026-02-11T03:35:40Z",
+   "precoCentavos": 666556,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260211033540/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=celulares%2Bcamera%2B200"
+  },
+  {
+   "data": "2026-02-11T03:35:40Z",
+   "precoCentavos": 599900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260211033540/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=celulares%2Bcamera%2B200",
+   "loja": "Ponto"
+  },
+  {
+   "data": "2026-02-11T03:35:40Z",
+   "precoCentavos": 539910,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260211033540/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=celulares%2Bcamera%2B200",
+   "loja": "Magazine Luiza"
+  },
+  {
    "data": "2026-03-09T17:37:47Z",
    "precoCentavos": 503910,
    "precoDeCentavos": 999900,
@@ -461,6 +554,13 @@
    "precoDeCentavos": 999900,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20260314010312/https://www.amazon.com.br/dp/B0CQD9VK7X?linkCode=ogi&th=1&psc=1&tag=tudocel-20"
+  },
+  {
+   "data": "2026-05-05T23:13:51Z",
+   "precoCentavos": 503820,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260505231351/https://www.amazon.com.br/dp/B0CQD9VK7X?th=1&linkCode=sl2&tag=tg-hm-20&linkId=2b0f12196b80f0933726bf8a2e516bdf"
   },
   {
    "data": "2026-05-06T07:27:13Z",
@@ -512,6 +612,29 @@
    "precoDeCentavos": null,
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20260719064240/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=88&searchterm=magalu"
+  },
+  {
+   "data": "2026-07-22T23:44:19Z",
+   "precoCentavos": 424900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260722234419/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=11"
+  },
+  {
+   "data": "2026-07-22T23:44:19Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260722234419/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=11",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-07-22T23:44:19Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "arquivo",
+   "link": "https://web.archive.org/web/20260722234419/https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla?_lc=11",
+   "loja": "KaBuM!"
   },
   {
    "data": "2026-08-15T17:56:11Z",
@@ -571,10 +694,33 @@
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
+  },
+  {
+   "data": "2026-11-18T18:10:37.202Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-18T18:10:37.202Z",
+   "precoCentavos": 539900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-18T18:10:37.202Z",
+   "precoCentavos": 579398,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/smartphone-samsung-galaxy-s24-ultra-5g-256gb-camera-quadrupla"
   }
  ],
  "resumo": {
-  "quantidade": 47,
+  "quantidade": 53,
   "menor": {
    "data": "2026-07-19T06:42:40Z",
    "precoCentavos": 411916,
@@ -589,9 +735,9 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20240211093757/https://www.amazon.com.br/dp/B0CQD9VK7X"
   },
-  "mediaCentavos": 545289,
+  "mediaCentavos": 548595,
   "atual": {
-   "data": "2026-11-17T18:39:22.613Z",
+   "data": "2026-11-18T18:10:37.202Z",
    "precoCentavos": 579398,
    "precoDeCentavos": null,
    "fonte": "loja",
