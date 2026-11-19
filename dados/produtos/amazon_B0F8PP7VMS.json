@@ -6,7 +6,7 @@
  },
  "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
  "criadoEm": "2026-11-14T20:11:47.764Z",
- "atualizadoEm": "2026-11-18T18:13:02.784Z",
+ "atualizadoEm": "2026-11-19T18:25:07.207Z",
  "copiasLidas": [
   "20250630123842",
   "20250831112637",
@@ -278,10 +278,40 @@
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
+  },
+  {
+   "data": "2026-11-19T18:25:08.628Z",
+   "precoCentavos": 394155,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.amazon.com.br/dp/B0F8PP7VMS"
+  },
+  {
+   "data": "2026-11-19T18:25:08.838Z",
+   "precoCentavos": 397005,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-19T18:25:08.838Z",
+   "precoCentavos": 406710,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-19T18:25:08.838Z",
+   "precoCentavos": 414900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
   }
  ],
  "resumo": {
-  "quantidade": 13,
+  "quantidade": 15,
   "menor": {
    "data": "2026-10-09T15:29:59Z",
    "precoCentavos": 386555,
@@ -296,15 +326,15 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25"
   },
-  "mediaCentavos": 477202,
+  "mediaCentavos": 467512,
   "atual": {
-   "data": "2026-11-18T18:13:04.695Z",
+   "data": "2026-11-19T18:25:08.838Z",
    "precoCentavos": 414900,
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
   },
   "primeiraData": "2025-08-09T13:47:36Z",
-  "veredito": "O último preço está 13% abaixo da média e 7% acima do menor já visto (R$ 3.865,55)."
+  "veredito": "O último preço está 11% abaixo da média e 7% acima do menor já visto (R$ 3.865,55)."
  }
 }
