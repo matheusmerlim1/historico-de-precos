@@ -6,7 +6,7 @@
  },
  "titulo": "Celular Samsung Galaxy S25 Ultra 5G, 256GB, 12GB RAM, Câmera Quádrupla de 200+50+10+50, Tela Grande de 6.9\", Titânio Azul",
  "criadoEm": "2026-11-14T16:42:03.695Z",
- "atualizadoEm": "2026-11-19T18:24:13.744Z",
+ "atualizadoEm": "2026-11-20T17:53:51.575Z",
  "copiasLidas": [
   "20250218214447",
   "20250716171527",
@@ -347,10 +347,33 @@
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
    "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-20T17:53:52.541Z",
+   "precoCentavos": 491055,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-20T17:53:52.541Z",
+   "precoCentavos": 517410,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
+   "loja": "Magazine Luiza"
+  },
+  {
+   "data": "2026-11-20T17:53:52.541Z",
+   "precoCentavos": 518900,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   }
  ],
  "resumo": {
-  "quantidade": 33,
+  "quantidade": 34,
   "menor": {
    "data": "2026-11-14T16:44:52.434Z",
    "precoCentavos": 479880,
@@ -365,15 +388,15 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250218214447/https://www.amazon.com.br/dp/B0DSY93451"
   },
-  "mediaCentavos": 643320,
+  "mediaCentavos": 639660,
   "atual": {
-   "data": "2026-11-19T18:24:15.897Z",
-   "precoCentavos": 573151,
+   "data": "2026-11-20T17:53:52.541Z",
+   "precoCentavos": 518900,
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   },
   "primeiraData": "2025-02-18T21:44:47Z",
-  "veredito": "O último preço está 11% abaixo da média e 19% acima do menor já visto (R$ 4.798,80)."
+  "veredito": "O último preço está 19% abaixo da média e 8% acima do menor já visto (R$ 4.798,80)."
  }
 }
