@@ -6,7 +6,7 @@
  },
  "titulo": "Celular Samsung Galaxy S25 Ultra 5G, 256GB, 12GB RAM, Câmera Quádrupla de 200+50+10+50, Tela Grande de 6.9\", Titânio Azul",
  "criadoEm": "2026-11-14T16:42:03.695Z",
- "atualizadoEm": "2026-11-26T19:08:27.949Z",
+ "atualizadoEm": "2026-11-27T19:04:29.849Z",
  "copiasLidas": [
   "20250218214447",
   "20250716171527",
@@ -657,16 +657,31 @@
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
    "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-27T19:04:30.392Z",
+   "precoCentavos": 479880,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb",
+   "loja": "KaBuM!"
+  },
+  {
+   "data": "2026-11-27T19:04:30.392Z",
+   "precoCentavos": 479876,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   }
  ],
  "resumo": {
-  "quantidade": 42,
+  "quantidade": 43,
   "menor": {
-   "data": "2026-11-14T16:44:52.434Z",
-   "precoCentavos": 479880,
-   "precoDeCentavos": 599889,
+   "data": "2026-11-27T19:04:30.392Z",
+   "precoCentavos": 479876,
+   "precoDeCentavos": null,
    "fonte": "loja",
-   "link": "https://www.amazon.com.br/dp/B0DSY93451"
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   },
   "maior": {
    "data": "2025-02-07T08:27:46Z",
@@ -675,15 +690,15 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250207082746/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   },
-  "mediaCentavos": 642135,
+  "mediaCentavos": 638361,
   "atual": {
-   "data": "2026-11-23T21:31:46.234Z",
-   "precoCentavos": 533200,
+   "data": "2026-11-27T19:04:30.392Z",
+   "precoCentavos": 479876,
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-ultra-5g-256gb-12-gb"
   },
   "primeiraData": "2025-02-07T08:27:46Z",
-  "veredito": "O último preço está 17% abaixo da média e 11% acima do menor já visto (R$ 4.798,80)."
+  "veredito": "O último preço (R$ 4.798,76) é o menor de todo o histórico."
  }
 }

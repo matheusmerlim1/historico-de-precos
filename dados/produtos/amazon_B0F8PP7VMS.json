@@ -6,7 +6,7 @@
  },
  "titulo": "Samsung Galaxy S25 Edge 5G, 512GB, 12GB, Câmera 200MP",
  "criadoEm": "2026-11-14T20:11:47.764Z",
- "atualizadoEm": "2026-11-26T19:09:15.098Z",
+ "atualizadoEm": "2026-11-27T19:05:15.544Z",
  "copiasLidas": [
   "20250630123842",
   "20250831112637",
@@ -461,10 +461,25 @@
    "precoDeCentavos": null,
    "fonte": "loja",
    "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
+  },
+  {
+   "data": "2026-11-27T19:05:15.844Z",
+   "precoCentavos": 398905,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb"
+  },
+  {
+   "data": "2026-11-27T19:05:15.844Z",
+   "precoCentavos": 406710,
+   "precoDeCentavos": null,
+   "fonte": "loja",
+   "link": "https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb",
+   "loja": "Magazine Luiza"
   }
  ],
  "resumo": {
-  "quantidade": 22,
+  "quantidade": 23,
   "menor": {
    "data": "2026-10-09T15:29:59Z",
    "precoCentavos": 386555,
@@ -479,9 +494,9 @@
    "fonte": "arquivo",
    "link": "https://web.archive.org/web/20250809134736/https://www.buscape.com.br/celular/celular-samsung-galaxy-s25-edge-512gb-12-gb?_lc=88&searchterm=s25"
   },
-  "mediaCentavos": 450045,
+  "mediaCentavos": 447822,
   "atual": {
-   "data": "2026-11-26T19:09:16.103Z",
+   "data": "2026-11-27T19:05:15.844Z",
    "precoCentavos": 398905,
    "precoDeCentavos": null,
    "fonte": "loja",
